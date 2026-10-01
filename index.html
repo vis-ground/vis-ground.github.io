@@ -56,7 +56,7 @@
   <p class="kicker">The task</p>
   <h2>A request is never just a request</h2>
   <p>Given a grounding source <i>𝒢</i>, a previously generated video prefix <i>v</i><sub>prefix</sub>, and a new viewer request <i>u</i>, the model generates a continuation <i>v</i><sub>cont</sub>. What the continuation must respect is spread across all three inputs: the source says what is supported, the prefix records what the viewer has already seen, and the request says where to go next. These dependencies only surface when the inputs are read <b>together</b>.</p>
-  <figure class="fig"><img src="assets/img/fig1_task.jpg" alt="Figure 1: a viewer's request has latent dependencies on the grounding source and the video prefix, which become constraints on the continuation." loading="lazy"></figure>
+  <figure class="fig"><img src="assets/img/fig1_task.jpg" alt="Figure 1: a cat must deliver medicine to grandmother; the bridge in the video is broken, a boat is available, and the viewer asks to use the boat and keep the medicine dry. The inputs jointly induce constraints, and VideoTaleInteract structures the context, induces candidate-specific constraints, and generates and verifies the continuation." loading="lazy"></figure>
   <div class="video-frame">
     <video controls playsinline preload="none" poster="assets/videos/task_illustration.jpg"><source src="assets/videos/task_illustration.mp4" type="video/mp4"></video>
   </div>
