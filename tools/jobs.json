@@ -1,0 +1,149 @@
+[
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/teaser/teaser.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/teaser.mp4",
+  "crf": 23,
+  "h": 1080,
+  "poster_t": 14.5
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/01_task_illustration.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/task_illustration.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 10
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/02_compare_glasses.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/compare_glasses.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 118
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/02_compare_peter.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/compare_peter.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 125
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/02_compare_peter_cinematic.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/compare_peter_cinematic.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 125
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/02_compare_ralph.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/compare_ralph.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 125
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/02_compare_loan.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/compare_loan.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 125
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/03_failure_1_ralph.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/failure_1_ralph.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 40
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/03_failure_2_glasses_steps.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/failure_2_glasses_steps.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 40
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/03_failure_3_glasses_render.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/failure_3_glasses_render.mp4",
+  "crf": 25,
+  "h": 1080,
+  "poster_t": 40
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P1-1_A_Kernel-Based_View_of_Language_Model_Fi.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_kernel_1.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,22.70,77.05)+between(t,121.45,183.55)+between(t,209.70,279.30)',select='not(between(t,0.00,6.15)+between(t,15.65,21.50)+between(t,115.15,121.00)+between(t,201.15,207.00)+between(t,286.40,292.50))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,15.65,21.50)+between(t,115.15,121.00)+between(t,201.15,207.00)+between(t,286.40,292.50))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P2-2_A_Kernel-Based_View_of_Language_Model_Fi.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_kernel_2.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,54.20,101.05)+between(t,117.70,180.30)+between(t,220.70,282.55)',select='not(between(t,0.00,6.15)+between(t,40.40,47.50)+between(t,111.15,117.00)+between(t,213.65,219.50)+between(t,282.40,288.50))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,40.40,47.50)+between(t,111.15,117.00)+between(t,213.65,219.50)+between(t,282.40,288.50))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P3-2_A_Kernel-Based_View_of_Language_Model_Fi.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_kernel_3.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,46.70,108.55)+between(t,137.70,199.55)+between(t,226.70,296.55)',select='not(between(t,0.00,6.15)+between(t,34.90,43.75)+between(t,131.15,137.00)+between(t,218.40,226.00)+between(t,307.40,313.50))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,34.90,43.75)+between(t,131.15,137.00)+between(t,218.40,226.00)+between(t,307.40,313.50))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P5-2_A_Kernel-Based_View_of_Language_Model_Fi.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_kernel_4.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,45.45,114.80)+between(t,149.95,204.30)+between(t,233.70,303.05)',select='not(between(t,0.00,6.15)+between(t,37.90,45.00)+between(t,142.40,148.25)+between(t,223.90,232.00)+between(t,310.15,316.25))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,37.90,45.00)+between(t,142.40,148.25)+between(t,223.90,232.00)+between(t,310.15,316.25))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P6-2_A_Kernel-Based_View_of_Language_Model_Fi.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_kernel_5.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,113.45,176.05)+between(t,175.70,252.55)+between(t,252.20,321.55)+between(t,321.20,390.55)+between(t,390.20,460.30)',select='not(between(t,0.00,6.15)+between(t,68.90,114.00)+between(t,390.50,460.00)+between(t,459.90,466.00))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,68.90,114.00)+between(t,390.50,460.00)+between(t,459.90,466.00))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P2-1_Advantage-Weighted_Regression_(AWR).mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_awr_1.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,24.70,87.05)+between(t,124.45,186.55)+between(t,186.20,240.55)+between(t,292.70,362.80)',select='not(between(t,0.00,6.15)+between(t,10.90,16.75)+between(t,110.40,124.50)+between(t,284.90,291.00)+between(t,362.40,368.50))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,10.90,16.75)+between(t,110.40,124.50)+between(t,284.90,291.00)+between(t,362.40,368.50))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P3-1_Advantage-Weighted_Regression_(AWR).mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_awr_2.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,55.95,110.30)+between(t,139.45,208.80)+between(t,241.70,311.05)',select='not(between(t,0.00,6.15)+between(t,44.65,51.50)+between(t,131.15,137.00)+between(t,229.15,235.00)+between(t,310.90,317.00))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,44.65,51.50)+between(t,131.15,137.00)+between(t,229.15,235.00)+between(t,310.90,317.00))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P4-1_Advantage-Weighted_Regression_(AWR).mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_awr_3.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,66.20,105.80)+between(t,105.45,121.30)+between(t,192.95,224.55)',select='not(between(t,0.00,6.15)+between(t,35.40,43.25)+between(t,59.40,65.25)+between(t,163.90,170.00)+between(t,186.65,193.25)+between(t,224.15,235.25))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,35.40,43.25)+between(t,59.40,65.25)+between(t,163.90,170.00)+between(t,186.65,193.25)+between(t,224.15,235.25))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P5-1_Advantage-Weighted_Regression_(AWR).mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_awr_4.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,34.70,96.55)+between(t,114.70,192.30)+between(t,225.20,294.80)',select='not(between(t,0.00,6.15)+between(t,26.90,33.00)+between(t,101.90,112.75)+between(t,212.15,222.00)+between(t,312.40,318.50))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,26.90,33.00)+between(t,101.90,112.75)+between(t,212.15,222.00)+between(t,312.40,318.50))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P6-1_Advantage-Weighted_Regression_(AWR).mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_awr_5.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,24.70,86.55)+between(t,115.45,177.55)+between(t,216.20,285.55)',select='not(between(t,0.00,6.15)+between(t,10.40,16.25)+between(t,106.40,112.25)+between(t,209.40,215.25)+between(t,295.65,301.75))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,10.40,16.25)+between(t,106.40,112.25)+between(t,209.40,215.25)+between(t,295.65,301.75))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ },
+ {
+  "in": "/Users/bx/Desktop/videotale-interact/videos/real_interaction/real_P1-2_The_Early_Life_of_hide.mp4",
+  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/interact/session_hide_1.mp4",
+  "filter_complex": "[0:v]split[m][c];[c]crop=1500:100:0:8,boxblur=24:6[bl];[m][bl]overlay=0:8:enable='between(t,69.70,124.05)+between(t,123.70,194.05)+between(t,226.95,296.80)',select='not(between(t,0.00,6.15)+between(t,44.90,50.75)+between(t,62.40,68.25)+between(t,218.90,224.75)+between(t,303.90,310.00))',setpts=N/FRAME_RATE/TB,scale=1280:720[v];[0:a]aselect='not(between(t,0.00,6.15)+between(t,44.90,50.75)+between(t,62.40,68.25)+between(t,218.90,224.75)+between(t,303.90,310.00))',asetpts=N/SR/TB[a]",
+  "crf": 27,
+  "poster_t": 12
+ }
+]

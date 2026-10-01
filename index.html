@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive Video Storytelling with Contextual Grounding</title>
+<meta name="description" content="VideoTaleInteract: interactive video storytelling where viewers pause and steer a video, with continuations grounded in the source, the video so far, and the request.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%231a73e8%22/%3E%3Cpath d=%22M12 9v14l11-7z%22 fill=%22white%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <h1>Interactive Video Storytelling<br>with Contextual Grounding</h1>
+  <p class="authors">
+    <span>Bingxuan Li<sup>1,2</sup></span>
+    <span>Yiwen Song<sup>1</sup></span>
+    <span>Xueqing Wu<sup>3</sup></span>
+    <span>Yanzhou Pan<sup>1</sup></span>
+    <span>Yang Li<sup>1</sup></span>
+    <span>Kuang Su<sup>1</sup></span>
+    <span>Jingyun Liu<sup>1</sup></span>
+    <span>Sebastian Ko</span>
+    <span>Huan Zhang<sup>2</sup></span>
+    <span>Tong Zhang<sup>2</sup></span>
+    <span>Nanyun Peng<sup>1</sup></span>
+    <span>Tomas Pfister<sup>1</sup></span>
+    <span>Yale Song<sup>1</sup></span>
+  </p>
+  <div class="affils">
+    <span class="affil"><sup>1</sup><img src="assets/img/logo_google.png" alt="Google" class="logo logo-google"></span>
+    <span class="affil"><sup>2</sup><img src="assets/img/logo_uiuc.png" alt="University of Illinois Urbana-Champaign" class="logo logo-uiuc"></span>
+    <span class="affil"><sup>3</sup><img src="assets/img/logo_ucla.png" alt="UCLA" class="logo logo-ucla"></span>
+  </div>
+  <nav class="buttons">
+    <a class="btn btn-dark" href="assets/paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z M14 2v6h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Paper</a>
+    <span class="btn btn-disabled" id="codeBtn" aria-disabled="true" title="Code will be released soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0 1 12 6.84c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z" fill="currentColor"/></svg>Code <span class="soon">coming soon</span></span>
+    <a class="btn" href="#bibtex"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H5v16h3M16 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="2"/></svg>BibTeX</a>
+  </nav>
+</header>
+
+<section class="teaser wrap-wide">
+  <div class="video-frame">
+    <video id="teaser" controls playsinline preload="metadata" poster="assets/videos/teaser.jpg">
+      <source src="assets/videos/teaser.mp4" type="video/mp4">
+    </video>
+  </div>
+  <p class="caption">Viewers pause a generated video and ask for what they want next. <b>VideoTaleInteract</b> turns the grounding source, the video already shown, and the new request into explicit constraints, and generates a continuation that satisfies all of them.</p>
+</section>
+
+<!-- ======================= TASK ======================= -->
+<section class="wrap" id="task">
+  <p class="kicker">The task</p>
+  <h2>A request is never just a request</h2>
+  <p>Given a grounding source <i>𝒢</i>, a previously generated video prefix <i>v</i><sub>prefix</sub>, and a new viewer request <i>u</i>, the model generates a continuation <i>v</i><sub>cont</sub>. What the continuation must respect is spread across all three inputs: the source says what is supported, the prefix records what the viewer has already seen, and the request says where to go next. These dependencies only surface when the inputs are read <b>together</b>.</p>
+  <figure class="fig"><img src="assets/img/fig1_task.jpg" alt="Figure 1: a viewer's request has latent dependencies on the grounding source and the video prefix, which become constraints on the continuation." loading="lazy"></figure>
+  <div class="video-frame">
+    <video controls playsinline preload="none" poster="assets/videos/task_illustration.jpg"><source src="assets/videos/task_illustration.mp4" type="video/mp4"></video>
+  </div>
+  <p class="caption">Task illustration (knowledge grounding): a viewer asks about the earliest uses of glasses <i>before</i> they were used for vision. The source, the prefix, and the request jointly induce the constraints the continuation must satisfy.</p>
+</section>
+
+<!-- ======================= METHOD ======================= -->
+<section class="band" id="method">
+  <div class="wrap">
+    <p class="kicker">Method</p>
+    <h2>Context Structuring and Constraint Induction</h2>
+    <p>VideoTaleInteract treats contextual grounding as <b>context compilation</b>: it compiles heterogeneous context into a grounded dependency model, and uses that model to control generation end to end.</p>
+    <figure class="fig fig-white"><img src="assets/img/fig3_method.png" alt="Figure 3: Overview of VideoTaleInteract." loading="lazy"></figure>
+    <div class="stages">
+      <div class="stage">
+        <span class="num n1">1</span>
+        <h3>Structured Context Abstraction</h3>
+        <p class="stage-tag">What the inputs establish</p>
+        <p>The source, the rendered prefix, and the story so far are turned into aligned <b>video</b>, <b>story</b>, and <b>source</b> states, made of typed predicates with temporal scope and evidence. Cross-context dependencies (prerequisites, persistence, state transitions) are derived from them.</p>
+      </div>
+      <div class="stage">
+        <span class="num n2">2</span>
+        <h3>Generation Constraints Induction</h3>
+        <p class="stage-tag">What future events must respect</p>
+        <p>Dependencies are projected onto a candidate continuation. Only the ones the proposed future makes relevant become constraints <code>c = (scope, applies-if, requires, evidence)</code>, each checked as pass, fail, or unknown.</p>
+      </div>
+      <div class="stage">
+        <span class="num n3">3</span>
+        <h3>Constrained Video Generation</h3>
+        <p class="stage-tag">Plan · verify · revise · render</p>
+        <p>Failed constraints give targeted feedback for revising the script. After rendering, the same constraints are checked against the video, because a valid script does not guarantee a faithful render.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= RESULTS ======================= -->
+<section class="wrap" id="results">
+  <p class="kicker">GIV-Bench</p>
+  <h2>A benchmark for grounded interactive video</h2>
+  <p>GIV-Bench pairs grounding sources, observed video prefixes, and viewer interventions across <b>narrative</b> and <b>knowledge</b> grounding, built from 250 CoQA source passages (MCTest, Gutenberg, RACE, CNN, Wikipedia) rendered in cinematic and cut-out styles. We measure Source Faithfulness (SF), Story Continuity (SC), Interaction Fulfillment (IF), their mean JCS, Visual Consistency (VC), and Video Quality (VQ).</p>
+  <div class="stats">
+    <div><b>250</b><span>grounding sources</span></div>
+    <div><b>1,004</b><span>viewer interventions</span></div>
+    <div><b>2,008</b><span>instruction–style instances</span></div>
+  </div>
+  <figure class="fig"><img src="assets/img/fig4_bench.png" alt="Figure 4: dataset construction and statistics." loading="lazy"></figure>
+
+  <h3 class="sub">Main results</h3>
+  <p class="table-note">Composite = equal-weight mean of narrative and knowledge JCS, with 95% CI. Best per backbone in <b>bold</b>.</p>
+  <div class="table-wrap"><table class="results" id="resultsTable"></table></div>
+
+  <h3 class="sub">Where the gains come from</h3>
+  <p>Hover any chart for exact values; use the controls to switch backbone or grounding setting.</p>
+  <div class="viz" id="vizProfile">
+      <h4>Scores on every metric</h4><p class="viz-sub">Mean of narrative and knowledge grounding by default. Click a legend entry to hide a method.</p>
+      <div class="viz-controls"><div class="seg seg-small viz-bb"></div><div class="seg seg-small viz-set"></div></div>
+      <div class="viz-legend"></div>
+      <div class="viz-svg"></div>
+      
+      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+    </div>
+  <div class="viz-grid">
+    <div class="viz" id="vizComposite">
+      <h4>Stable across video backbones</h4><p class="viz-sub">Composite score per backbone; the bar spans the cross-backbone range.</p>
+      
+      <div class="viz-legend"></div>
+      <div class="viz-svg"></div>
+      
+      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+    </div>
+    <div class="viz" id="vizGain">
+      <h4>JCS gain over the strongest baseline</h4><p class="viz-sub">Per backbone and grounding setting, in points.</p>
+      
+      
+      <div class="viz-svg"></div>
+      
+      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+    </div>
+  </div>
+  <div class="viz" id="vizDelta">
+      <h4>Ours minus the IF-leading baseline</h4><p class="viz-sub">Even against the baseline that follows the request most literally, grounding gains concentrate in story continuity.</p>
+      <div class="viz-controls"><div class="seg seg-small viz-combo"></div></div>
+      
+      <div class="viz-svg"></div>
+      <p class="viz-note"></p>
+      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+    </div>
+</section>
+
+<!-- ======================= INTERACTIVE DEMO ======================= -->
+<section class="band" id="demo">
+  <div class="wrap-wide">
+    <p class="kicker">Interactive demo</p>
+    <h2>Pause the story. Ask anything.</h2>
+    <p class="lede">These are real viewing sessions from our formative study. The story pauses where a viewer stopped it, and you choose what to ask. Every question is one a real viewer typed, and every answer was generated live by the system and inserted at the next scene boundary. Skip a question and the story simply carries on.</p>
+
+    <div class="demo-controls">
+      <div class="seg" id="topicTabs" role="tablist" aria-label="Topic"></div>
+      <div class="seg seg-small" id="sessionTabs" role="tablist" aria-label="Viewing session"></div>
+    </div>
+
+    <div class="demo">
+      <div class="player" id="demoPlayer">
+        <video id="demoVideo" playsinline preload="metadata"></video>
+        <div class="answer-band" id="answerBand" hidden>
+          <span class="answer-tag">Generated answer</span>
+          <span class="answer-q" id="answerQ"></span>
+        </div>
+        <div class="start-overlay" id="demoStart">
+          <button class="big-play" id="demoStartBtn" aria-label="Start the session"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button>
+          <p>Press play. The story will stop when it's your turn to ask.</p>
+        </div>
+        <div class="ask-overlay" id="askOverlay" hidden>
+          <div class="ask-card">
+            <div class="ask-head"><span class="pause-icon" aria-hidden="true"></span><span>Paused. What would you like to ask?</span></div>
+            <div class="ask-chips" id="askChips"></div>
+            <div class="ask-actions">
+              <button class="btn btn-dark" id="askBtn" disabled>Ask</button>
+              <button class="btn" id="skipBtn">Keep watching</button>
+            </div>
+            <p class="ask-note">Questions shown are the ones a real viewer asked at this moment.</p>
+          </div>
+        </div>
+        <div class="toast" id="demoToast" hidden></div>
+        <div class="pbar">
+          <button class="pb-play" id="pbPlay" aria-label="Play/pause"></button>
+          <div class="pb-track" id="pbTrack"><div class="pb-fill" id="pbFill"></div><div class="pb-marks" id="pbMarks"></div></div>
+          <span class="pb-time" id="pbTime">0:00</span>
+          <button class="pb-btn" id="pbMute" aria-label="Mute"></button>
+          <button class="pb-btn" id="pbFull" aria-label="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+        </div>
+      </div>
+      <aside class="demo-side">
+        <h3 id="demoTitle"></h3>
+        <p class="meta" id="demoMeta"></p>
+        <ol class="qlog" id="qLog"></ol>
+        <p class="side-note">Markers on the progress bar show where the story will pause. Your choices only change what plays here. Apart from removing title cards and relabelling answers, the sessions are shown as they were generated.</p>
+      </aside>
+    </div>
+    <div class="formative">
+      <h3 class="sub">Formative study: interaction helps viewers learn</h3>
+      <p>Nine volunteers watched knowledge-grounded videos with and without the ability to interrupt; seven passed the attention test. Learning gain is post-test minus pre-test accuracy, in percentage points.</p>
+      <div class="viz-grid">
+        <div class="viz" id="vizGains">
+      <h4>Within-participant learning gains</h4><p class="viz-sub">Each grey line is one participant; blue is the mean.</p>
+      
+      <div class="viz-legend"></div>
+      <div class="viz-svg"></div>
+      
+      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+    </div>
+        <div class="viz" id="vizRatings">
+      <h4>Interactive experience ratings</h4><p class="viz-sub">Four respondents, 1 = strongly disagree, 5 = strongly agree.</p>
+      
+      <div class="viz-legend"></div>
+      <div class="viz-svg"></div>
+      
+      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+    </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======================= COMPARISONS ======================= -->
+<section class="band" id="compare">
+  <div class="wrap-wide">
+    <p class="kicker">Comparison</p>
+    <h2>Same inputs, same backbone, different grounding</h2>
+    <p class="lede">Each example plays the shared prefix, the viewer request, and then every method’s continuation in turn (Omni-1.1-Flash backbone), with notes on what each gets right or wrong.</p>
+    <div class="seg" id="cmpTabs" role="tablist" aria-label="Comparison example"></div>
+    <div class="cmp">
+      <div class="video-frame"><video id="cmpVideo" controls playsinline preload="metadata"></video></div>
+      <aside class="cmp-side">
+        <p class="meta" id="cmpMeta"></p>
+        <h3 id="cmpTitle"></h3>
+        <p class="req" id="cmpReq"></p>
+        <ul class="verdicts" id="cmpVerdicts"></ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FAILURES ======================= -->
+<section class="band" id="failures">
+  <div class="wrap-wide">
+    <p class="kicker">Limitations</p>
+    <h2>Where it still falls short</h2>
+    <div class="viz viz-spaced" id="vizSeverity">
+      <h4>Score distribution in a 72-output analysis sample</h4><p class="viz-sub">Most outputs keep the main context (≥ 75), but perfect scores are rarer, especially for story continuity and interaction fulfillment.</p>
+      
+      <div class="viz-legend"></div>
+      <div class="viz-svg"></div>
+      
+      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+    </div>
+    <div class="grid3" id="failGrid"></div>
+  </div>
+</section>
+
+<section class="wrap" id="bibtex">
+  <h2>BibTeX</h2>
+  <div class="bib"><button class="copy" id="copyBib">Copy</button><pre id="bibText">@article{li2026interactive,
+  title   = {Interactive Video Storytelling with Contextual Grounding},
+  author  = {Li, Bingxuan and Song, Yiwen and Wu, Xueqing and Pan, Yanzhou and Li, Yang and
+             Su, Kuang and Liu, Jingyun and Ko, Sebastian and Zhang, Huan and Zhang, Tong and
+             Peng, Nanyun and Pfister, Tomas and Song, Yale},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre></div>
+</section>
+
+<footer>
+  <p>Interactive Video Storytelling with Contextual Grounding · Google · University of Illinois Urbana-Champaign · UCLA</p>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+</body>
+</html>
