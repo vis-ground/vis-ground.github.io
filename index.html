@@ -256,6 +256,24 @@
       <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
     </div>
     <div class="grid3" id="failGrid"></div>
+
+    <h3 class="lim-head">Limits inherited from the video generator</h3>
+    <p class="lim-lede">Some errors come from the video model rather than from contextual grounding. In the formative-study sessions on the AWR paper, the narration is correct but the rendered visuals are not.</p>
+    <div class="grid3 lim-shots">
+      <figure><img src="assets/img/lim_equation.jpg" alt="Glass board showing an invented pi-i of tau formula" loading="lazy" width="1280" height="720">
+        <figcaption>P3 asks about “mu-k of tau”; the board shows an invented π<sub>i</sub>(τ) formula.<small>AWR session · P3 · 2:30</small></figcaption></figure>
+      <figure><img src="assets/img/lim_misspelled.jpg" alt="Glass board with the misspelled word Lagrengion and nonsense terms" loading="lazy" width="1280" height="720">
+        <figcaption>Misspelled “Lagrengion” and nonsense terms while explaining on- vs. off-policy learning.<small>AWR session · P5 · 0:42</small></figcaption></figure>
+      <figure><img src="assets/img/lim_chart.jpg" alt="Benchmark dashboard with plausible-looking but meaningless charts" loading="lazy" width="1280" height="720">
+        <figcaption>Dashboard charts look plausible but carry no real data.<small>AWR session · P2 · 1:12</small></figcaption></figure>
+    </div>
+    <div class="lim-cards">
+      <div class="lim-card audio"><h4>Audio inconsistency</h4>
+        <p>Shots are synthesized separately, so a character’s voice, loudness and background ambience can drift from shot to shot. Our metrics don’t capture this: video quality is scored on sampled frames, not audio.</p></div>
+      <div class="lim-card symbols"><h4>Unfaithful text, equations and charts</h4>
+        <p>The script decides what to explain, but the renderer draws its own symbols: misspelled terms, invented variables, data-free plots. Our verifier checks events and entities, not symbolic correctness.</p></div>
+    </div>
+    <p class="lim-future"><b>Future work:</b> composite exact overlays (LaTeX, real plots) instead of generating them; audio-aware verification and a fixed voice per character.</p>
   </div>
 </section>
 
