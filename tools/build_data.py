@@ -154,7 +154,7 @@ if __name__ == "__main__":
         {"in": os.path.join(ROOT, "teaser", "teaser.mp4"), "out": f"{WEB}/assets/videos/teaser.mp4", "crf": 23, "h": 1080},
         {"in": f"{V}/01_task_illustration.mp4", "out": f"{WEB}/assets/videos/task_illustration.mp4", "crf": 25, "h": 1080},
     ]
-    for n in ["02_compare_glasses", "02_compare_peter", "02_compare_peter_cinematic", "02_compare_ralph", "02_compare_loan",
+    for n in ["02_compare_glasses", "02_compare_peter", "02_compare_ralph", "02_compare_loan",
               "03_failure_1_ralph", "03_failure_2_glasses_steps", "03_failure_3_glasses_render"]:
         other.append({"in": f"{V}/{n}.mp4", "out": f"{WEB}/assets/videos/{n[3:]}.mp4", "crf": 25, "h": 1080})
     data = {"real": real, "stories": stories}

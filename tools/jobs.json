@@ -28,13 +28,6 @@
   "poster_t": 125
  },
  {
-  "in": "/Users/bx/Desktop/videotale-interact/videos/02_compare_peter_cinematic.mp4",
-  "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/compare_peter_cinematic.mp4",
-  "crf": 25,
-  "h": 1080,
-  "poster_t": 125
- },
- {
   "in": "/Users/bx/Desktop/videotale-interact/videos/02_compare_ralph.mp4",
   "out": "/Users/bx/Desktop/videotale-interact/website/assets/videos/compare_ralph.mp4",
   "crf": 25,
