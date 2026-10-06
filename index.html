@@ -3,164 +3,272 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Interactive Video Storytelling with Contextual Grounding</title>
-<meta name="description" content="VideoTaleInteract: interactive video storytelling where viewers pause and steer a video, with continuations grounded in the source, the video so far, and the request.">
+<title>VIS-Ground: Video Interactive Storytelling with Contextual Grounding</title>
+<meta name="description" content="VIS-Ground: video interactive storytelling where viewers pause and steer a video, with continuations grounded in the source, the video so far, and the request.">
+<meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%231a73e8%22/%3E%3Cpath d=%22M12 9v14l11-7z%22 fill=%22white%22/%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 
-<header class="hero">
-  <h1>Interactive Video Storytelling<br>with Contextual Grounding</h1>
-  <p class="authors">
-    <span>Bingxuan Li<sup>1,2</sup></span>
-    <span>Yiwen Song<sup>1</sup></span>
-    <span>Xueqing Wu<sup>3</sup></span>
-    <span>Yanzhou Pan<sup>1</sup></span>
-    <span>Yang Li<sup>1</sup></span>
-    <span>Kuang Su<sup>1</sup></span>
-    <span>Jingyun Liu<sup>1</sup></span>
-    <span>Sebastian Ko</span>
-    <span>Huan Zhang<sup>2</sup></span>
-    <span>Tong Zhang<sup>2</sup></span>
-    <span>Nanyun Peng<sup>1</sup></span>
-    <span>Tomas Pfister<sup>1</sup></span>
-    <span>Yale Song<sup>1</sup></span>
-  </p>
-  <div class="affils">
-    <span class="affil"><sup>1</sup><img src="assets/img/logo_google.png" alt="Google" class="logo logo-google"></span>
-    <span class="affil"><sup>2</sup><img src="assets/img/logo_uiuc.png" alt="University of Illinois Urbana-Champaign" class="logo logo-uiuc"></span>
-    <span class="affil"><sup>3</sup><img src="assets/img/logo_ucla.png" alt="UCLA" class="logo logo-ucla"></span>
+<div class="progress" aria-hidden="true"><span id="progress"></span></div>
+
+<nav class="topnav" id="topnav" aria-label="Sections">
+  <a class="nav-brand" href="#top" aria-label="VIS-Ground, back to top"><span class="wm"><span class="b">V</span><span class="r">I</span><span class="y">S</span>-<span class="b">G</span><span class="g">r</span><span class="r">o</span><span class="b">u</span><span class="r">n</span><span class="y">d</span></span></a>
+  <div class="nav-links">
+    <a href="#task">Task</a>
+    <a href="#method">Method</a>
+    <a href="#results">Results</a>
+    <a href="#compare">Examples</a>
+    <a href="#demo">Demo</a>
+    <a href="#failures">Limits</a>
   </div>
-  <nav class="buttons">
-    <a class="btn btn-dark" href="assets/paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z M14 2v6h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Paper</a>
-    <span class="btn btn-disabled" id="codeBtn" aria-disabled="true" title="Code will be released soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0 1 12 6.84c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z" fill="currentColor"/></svg>Code <span class="soon">coming soon</span></span>
+  <a class="btn btn-glow btn-sm" href="assets/paper.pdf" target="_blank" rel="noopener">Paper</a>
+</nav>
+
+<!-- ======================= HERO ======================= -->
+<header class="hero" id="top">
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <h1 class="hero-title reveal"><span class="wm"><span class="b">V</span><span class="r">I</span><span class="y">S</span>-<span class="b">G</span><span class="g">r</span><span class="r">o</span><span class="b">u</span><span class="r">n</span><span class="y">d</span></span>: Video Interactive Storytelling<br>with Contextual Grounding</h1>
+  <p class="authors reveal">
+    <span><a href="https://bingxuanli.com" target="_blank" rel="noopener">Bingxuan Li</a><sup>1,2</sup></span>
+    <span><a href="https://yiwen-song.github.io/" target="_blank" rel="noopener">Yiwen Song</a><sup>1</sup></span>
+    <span><a href="https://shirley-wu.github.io/" target="_blank" rel="noopener">Xueqing Wu</a><sup>3</sup></span>
+    <span><a href="#top">Yanzhou Pan</a><sup>1</sup></span>
+    <span><a href="#top">Yang Li</a><sup>1</sup></span>
+    <span><a href="#top">Kuang Su</a><sup>1</sup></span>
+    <span><a href="#top">Jingyun Liu</a><sup>1</sup></span>
+    <span><a href="#top">Sebastian Ko</a><sup>1</sup></span>
+    <span><a href="https://huan-zhang.com" target="_blank" rel="noopener">Huan Zhang</a><sup>2</sup></span>
+    <span><a href="https://tongzhang-ml.org" target="_blank" rel="noopener">Tong Zhang</a><sup>2</sup></span>
+    <span><a href="https://violetpeng.github.io" target="_blank" rel="noopener">Nanyun Peng</a><sup>1</sup></span>
+    <span><a href="https://tomas.pfister.fi" target="_blank" rel="noopener">Tomas Pfister</a><sup>1</sup></span>
+    <span><a href="https://people.csail.mit.edu/yalesong/home" target="_blank" rel="noopener">Yale Song</a><sup>1</sup></span>
+  </p>
+  <div class="affils reveal">
+    <span class="affil"><sup>1</sup><img src="assets/img/logo_google.png" alt="Google" class="logo"></span>
+    <span class="affil"><sup>2</sup><img src="assets/img/logo_uiuc.png" alt="University of Illinois Urbana-Champaign" class="logo"></span>
+    <span class="affil"><sup>3</sup><img src="assets/img/logo_ucla.png" alt="UCLA" class="logo"></span>
+  </div>
+  <div class="buttons reveal">
+    <a class="btn btn-glow" href="assets/paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z M14 2v6h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Paper</a>
+    <span class="btn btn-disabled" aria-disabled="true" title="Code will be released soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0 1 12 6.84c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z" fill="currentColor"/></svg>Code <span class="soon">soon</span></span>
     <a class="btn" href="#bibtex"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H5v16h3M16 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="2"/></svg>BibTeX</a>
-  </nav>
+  </div>
+
+  <div class="teaser reveal">
+    <div class="video-frame glow-frame">
+      <video id="teaser" autoplay muted loop playsinline controls preload="auto" poster="assets/videos/teaser.jpg">
+        <source src="assets/videos/teaser.mp4" type="video/mp4">
+      </video>
+      <button class="sound-hint" id="soundHint" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sound is off · tap to unmute</button>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat reveal"><b><span data-count="10.3" data-decimals="1" data-prefix="+">+10.3</span></b><span>points over the strongest baseline</span></div>
+    <div class="stat reveal"><b><span data-count="3">3</span>/3</b><span>video backbones where it ranks first</span></div>
+    <div class="stat reveal"><b><span data-count="1004" data-sep="1">1,004</span></b><span>viewer interventions in <span class="wm"><span class="b">V</span><span class="r">I</span><span class="y">S</span>-<span class="b">B</span><span class="g">e</span><span class="r">n</span><span class="b">c</span><span class="r">h</span></span></span></div>
+  </div>
+  <a class="scroll-cue" href="#task" aria-label="Scroll to content"><span></span></a>
 </header>
 
-<section class="teaser wrap-wide">
-  <div class="video-frame">
-    <video id="teaser" controls playsinline preload="metadata" poster="assets/videos/teaser.jpg">
-      <source src="assets/videos/teaser.mp4" type="video/mp4">
-    </video>
-  </div>
-  <p class="caption">Viewers pause a generated video and ask for what they want next. <b>VideoTaleInteract</b> turns the grounding source, the video already shown, and the new request into explicit constraints, and generates a continuation that satisfies all of them.</p>
-</section>
-
 <!-- ======================= TASK ======================= -->
-<section class="wrap" id="task">
-  <p class="kicker">The task</p>
-  <h2>A request is never just a request</h2>
-  <p>Given a grounding source <i>𝒢</i>, a previously generated video prefix <i>v</i><sub>prefix</sub>, and a new viewer request <i>u</i>, the model generates a continuation <i>v</i><sub>cont</sub>. What the continuation must respect is spread across all three inputs: the source says what is supported, the prefix records what the viewer has already seen, and the request says where to go next. These dependencies only surface when the inputs are read <b>together</b>.</p>
-  <figure class="fig"><img src="assets/img/fig1_task.jpg" alt="Figure 1: a cat must deliver medicine to grandmother; the bridge in the video is broken, a boat is available, and the viewer asks to use the boat and keep the medicine dry. The inputs jointly induce constraints, and VideoTaleInteract structures the context, induces candidate-specific constraints, and generates and verifies the continuation." loading="lazy"></figure>
-  <div class="video-frame">
-    <video controls playsinline preload="none" poster="assets/videos/task_illustration.jpg"><source src="assets/videos/task_illustration.mp4" type="video/mp4"></video>
+<section class="section" id="task">
+  <div class="wrap">
+    <p class="kicker reveal"><span class="kn">01</span>The task</p>
+    <h2 class="reveal">A request is never<br>just a request.</h2>
+    <p class="lede reveal">What the next scene must respect is spread across three inputs. It only shows up when you read them <em>together</em>.</p>
+
+    <div class="tri" id="tri">
+      <div class="tri-card src reveal glow-card"><span class="tri-label">Grounding source 𝒢</span><p>“Deliver medicine to grandmother.”</p></div>
+      <div class="tri-card pre reveal glow-card"><span class="tri-label">Video so far</span><p>The bridge is broken.<br>A boat is waiting.</p></div>
+      <div class="tri-card req reveal glow-card"><span class="tri-label">Viewer asks</span><p>“Use the boat, and keep the medicine dry.”</p></div>
+      <svg class="tri-lines" viewBox="0 0 900 120" preserveAspectRatio="none" aria-hidden="true">
+        <path class="ln src" d="M150 0 C150 70, 450 40, 450 118"/>
+        <path class="ln pre" d="M450 0 L450 118"/>
+        <path class="ln req" d="M750 0 C750 70, 450 40, 450 118"/>
+      </svg>
+      <div class="tri-out reveal">
+        <span class="tri-label">The continuation must</span>
+        <ul>
+          <li><i class="d src"></i>reach grandmother</li>
+          <li><i class="d pre"></i>cross by boat</li>
+          <li><i class="d req"></i>keep the medicine dry</li>
+        </ul>
+      </div>
+    </div>
+
+    <figure class="paper-fig zoom reveal"><img src="assets/img/fig1_task.jpg" alt="Figure 1: a cat must deliver medicine to grandmother; the bridge in the video is broken, a boat is available, and the viewer asks to use the boat and keep the medicine dry. The inputs jointly induce constraints, and VIS-Ground structures the context, induces candidate-specific constraints, and generates and verifies the continuation." loading="lazy"><figcaption>Figure 1 · click to enlarge</figcaption></figure>
   </div>
-  <p class="caption">Task illustration (knowledge grounding): a viewer asks about the earliest uses of glasses <i>before</i> they were used for vision. The source, the prefix, and the request jointly induce the constraints the continuation must satisfy.</p>
 </section>
 
 <!-- ======================= METHOD ======================= -->
-<section class="band" id="method">
+<section class="section" id="method">
   <div class="wrap">
-    <p class="kicker">Method</p>
-    <h2>Context Structuring and Constraint Induction</h2>
-    <p>VideoTaleInteract treats contextual grounding as <b>context compilation</b>: it compiles heterogeneous context into a grounded dependency model, and uses that model to control generation end to end.</p>
-    <figure class="fig fig-white"><img src="assets/img/fig3_method.png" alt="Figure 3: Overview of VideoTaleInteract." loading="lazy"></figure>
-    <div class="stages">
-      <div class="stage">
-        <span class="num n1">1</span>
+    <p class="kicker reveal"><span class="kn">02</span>Method</p>
+    <h2 class="reveal">Compile the context.<br>Then generate.</h2>
+    <p class="lede reveal">Raw inputs become a grounded dependency model, which then steers every step of generation.</p>
+
+    <ol class="steps">
+      <li class="step reveal glow-card s1">
+        <span class="step-n">1</span>
         <h3>Structured Context Abstraction</h3>
-        <p class="stage-tag">What the inputs establish</p>
-        <p>The source, the rendered prefix, and the story so far are turned into aligned <b>video</b>, <b>story</b>, and <b>source</b> states, made of typed predicates with temporal scope and evidence. Cross-context dependencies (prerequisites, persistence, state transitions) are derived from them.</p>
-      </div>
-      <div class="stage">
-        <span class="num n2">2</span>
+        <p>Turn the source, video and story into aligned states and their cross-dependencies.</p>
+        <span class="step-tag">What the inputs establish</span>
+      </li>
+      <li class="step reveal glow-card s2">
+        <span class="step-n">2</span>
         <h3>Generation Constraints Induction</h3>
-        <p class="stage-tag">What future events must respect</p>
-        <p>Dependencies are projected onto a candidate continuation. Only the ones the proposed future makes relevant become constraints <code>c = (scope, applies-if, requires, evidence)</code>, each checked as pass, fail, or unknown.</p>
-      </div>
-      <div class="stage">
-        <span class="num n3">3</span>
+        <p>Only dependencies the proposed continuation makes relevant become constraints.</p>
+        <code class="step-code">c = (scope, applies-if, requires, evidence)</code>
+      </li>
+      <li class="step reveal glow-card s3">
+        <span class="step-n">3</span>
         <h3>Constrained Video Generation</h3>
-        <p class="stage-tag">Plan · verify · revise · render</p>
-        <p>Failed constraints give targeted feedback for revising the script. After rendering, the same constraints are checked against the video, because a valid script does not guarantee a faithful render.</p>
-      </div>
-    </div>
+        <p>Plan, verify, revise, render. Then check the rendered video against the same constraints.</p>
+        <span class="step-tag">Plan · verify · revise · render</span>
+      </li>
+    </ol>
+
+    <figure class="paper-fig zoom reveal"><img src="assets/img/fig3_method.png" alt="Figure 3: Overview of VIS-Ground." loading="lazy"><figcaption>Figure 3 · click to enlarge</figcaption></figure>
   </div>
 </section>
 
 <!-- ======================= RESULTS ======================= -->
-<section class="wrap" id="results">
-  <p class="kicker">GIV-Bench</p>
-  <h2>A benchmark for grounded interactive video</h2>
-  <p>GIV-Bench pairs grounding sources, observed video prefixes, and viewer interventions across <b>narrative</b> and <b>knowledge</b> grounding, built from 250 CoQA source passages (MCTest, Gutenberg, RACE, CNN, Wikipedia) rendered in cinematic and cut-out styles. We measure Source Faithfulness (SF), Story Continuity (SC), Interaction Fulfillment (IF), their mean JCS, Visual Consistency (VC), and Video Quality (VQ).</p>
-  <div class="stats">
-    <div><b>250</b><span>grounding sources</span></div>
-    <div><b>1,004</b><span>viewer interventions</span></div>
-    <div><b>2,008</b><span>instruction–style instances</span></div>
-  </div>
-  <figure class="fig"><img src="assets/img/fig4_bench.png" alt="Figure 4: dataset construction and statistics." loading="lazy"></figure>
+<section class="section" id="results">
+  <div class="wrap">
+    <p class="kicker reveal"><span class="kn">03</span>Results</p>
+    <h2 class="reveal">Best on every backbone.</h2>
+    <p class="lede reveal">Overall composite score, <span class="wm"><span class="b">V</span><span class="r">I</span><span class="y">S</span>-<span class="b">G</span><span class="g">r</span><span class="r">o</span><span class="b">u</span><span class="r">n</span><span class="y">d</span></span> vs. the strongest baseline on each video generator.</p>
 
-  <h3 class="sub">Main results</h3>
-  <p class="table-note">Composite = equal-weight mean of narrative and knowledge JCS, with 95% CI. Best per backbone in <b>bold</b>.</p>
-  <div class="table-wrap"><table class="results" id="resultsTable"></table></div>
+    <div class="bb-cards">
+      <div class="bb-card reveal glow-card" data-ours="84.2" data-base="71.9">
+        <span class="bb-name">Omni-1.1-Flash</span>
+        <b class="bb-score" data-count="84.2" data-decimals="1">84.2</b>
+        <span class="bb-gain">+12.3 vs VideoGen-of-Thought</span>
+        <div class="bars"><div class="bar ours"><i></i><span>Ours</span></div><div class="bar base"><i></i><span>71.9</span></div></div>
+      </div>
+      <div class="bb-card reveal glow-card" data-ours="84.6" data-base="69.3">
+        <span class="bb-name">Veo 3.1</span>
+        <b class="bb-score" data-count="84.6" data-decimals="1">84.6</b>
+        <span class="bb-gain">+15.3 vs Direct Generation</span>
+        <div class="bars"><div class="bar ours"><i></i><span>Ours</span></div><div class="bar base"><i></i><span>69.3</span></div></div>
+      </div>
+      <div class="bb-card reveal glow-card" data-ours="78.8" data-base="75.4">
+        <span class="bb-name">MiniMax-H3</span>
+        <b class="bb-score" data-count="78.8" data-decimals="1">78.8</b>
+        <span class="bb-gain">+3.4 vs MovieAgent</span>
+        <div class="bars"><div class="bar ours"><i></i><span>Ours</span></div><div class="bar base"><i></i><span>75.4</span></div></div>
+      </div>
+    </div>
 
-  <h3 class="sub">Where the gains come from</h3>
-  <p>Hover any chart for exact values; use the controls to switch backbone or grounding setting.</p>
-  <div class="viz" id="vizProfile">
-      <h4>Scores on every metric</h4><p class="viz-sub">Mean of narrative and knowledge grounding by default. Click a legend entry to hide a method.</p>
-      <div class="viz-controls"><div class="seg seg-small viz-bb"></div><div class="seg seg-small viz-set"></div></div>
-      <div class="viz-legend"></div>
-      <div class="viz-svg"></div>
-      
-      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+    <div class="panel reveal">
+      <div class="seg panel-tabs" role="tablist" aria-label="Result views">
+        <button role="tab" aria-selected="true" data-panel="pProfile">Every metric</button>
+        <button role="tab" aria-selected="false" data-panel="pComposite">Across backbones</button>
+        <button role="tab" aria-selected="false" data-panel="pGain">JCS gain</button>
+        <button role="tab" aria-selected="false" data-panel="pDelta">vs. IF leader</button>
+        <button role="tab" aria-selected="false" data-panel="pTable">Full table</button>
+      </div>
+      <div class="panel-body" id="pProfile">
+        <div class="viz" id="vizProfile">
+          <h4>Scores on every metric</h4><p class="viz-sub">Click a legend entry to hide a method.</p>
+          <div class="viz-controls"><div class="seg seg-small viz-bb"></div><div class="seg seg-small viz-set"></div></div>
+          <div class="viz-legend"></div>
+          <div class="viz-svg"></div>
+          <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+        </div>
+      </div>
+      <div class="panel-body" id="pComposite" hidden>
+        <div class="viz" id="vizComposite">
+          <h4>Stable across video backbones</h4><p class="viz-sub">Composite per backbone; the bar spans its range.</p>
+          <div class="viz-legend"></div>
+          <div class="viz-svg"></div>
+          <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+        </div>
+      </div>
+      <div class="panel-body" id="pGain" hidden>
+        <div class="viz" id="vizGain">
+          <h4>JCS gain over the strongest baseline</h4><p class="viz-sub">Per backbone and grounding setting, in points.</p>
+          <div class="viz-svg"></div>
+          <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+        </div>
+      </div>
+      <div class="panel-body" id="pDelta" hidden>
+        <div class="viz" id="vizDelta">
+          <h4>Ours minus the IF-leading baseline</h4><p class="viz-sub">Gains concentrate in story continuity.</p>
+          <div class="viz-controls"><div class="seg seg-small viz-combo"></div></div>
+          <div class="viz-svg"></div>
+          <p class="viz-note"></p>
+          <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+        </div>
+      </div>
+      <div class="panel-body" id="pTable" hidden>
+        <p class="table-note">Composite = equal-weight mean of narrative and knowledge JCS, with 95% CI. Best per backbone in <b>bold</b>.</p>
+        <div class="table-wrap"><table class="results" id="resultsTable"></table></div>
+      </div>
     </div>
-  <div class="viz-grid">
-    <div class="viz" id="vizComposite">
-      <h4>Stable across video backbones</h4><p class="viz-sub">Composite score per backbone; the bar spans the cross-backbone range.</p>
-      
-      <div class="viz-legend"></div>
-      <div class="viz-svg"></div>
-      
-      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
-    </div>
-    <div class="viz" id="vizGain">
-      <h4>JCS gain over the strongest baseline</h4><p class="viz-sub">Per backbone and grounding setting, in points.</p>
-      
-      
-      <div class="viz-svg"></div>
-      
-      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+
+    <div class="bench">
+      <div class="bench-head reveal">
+        <p class="kicker"><span class="wm"><span class="b">V</span><span class="r">I</span><span class="y">S</span>-<span class="b">B</span><span class="g">e</span><span class="r">n</span><span class="b">c</span><span class="r">h</span></span></p>
+        <h3>The benchmark</h3>
+        <p>Narrative and knowledge grounding, built from CoQA passages and rendered in two styles.</p>
+      </div>
+      <div class="chips reveal">
+        <span class="chip-stat"><b data-count="250">250</b>sources</span>
+        <span class="chip-stat"><b data-count="1004" data-sep="1">1,004</b>interventions</span>
+        <span class="chip-stat"><b data-count="2008" data-sep="1">2,008</b>instances</span>
+        <span class="chip-stat"><b data-count="6">6</b>metrics</span>
+      </div>
+      <p class="metrics reveal"><span>SF source faithfulness</span><span>SC story continuity</span><span>IF interaction fulfillment</span><span>JCS joint (mean)</span><span>VC visual consistency</span><span>VQ video quality</span></p>
+      <figure class="paper-fig zoom reveal"><img src="assets/img/fig4_bench.png" alt="Figure 4: dataset construction and statistics." loading="lazy"><figcaption>Figure 4 · click to enlarge</figcaption></figure>
     </div>
   </div>
-  <div class="viz" id="vizDelta">
-      <h4>Ours minus the IF-leading baseline</h4><p class="viz-sub">Even against the baseline that follows the request most literally, grounding gains concentrate in story continuity.</p>
-      <div class="viz-controls"><div class="seg seg-small viz-combo"></div></div>
-      
-      <div class="viz-svg"></div>
-      <p class="viz-note"></p>
-      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+</section>
+
+<!-- ======================= COMPARISONS ======================= -->
+<section class="section" id="compare">
+  <div class="wrap-wide">
+    <p class="kicker reveal"><span class="kn">04</span>Examples</p>
+    <h2 class="reveal">Same inputs.<br>Different grounding.</h2>
+    <p class="lede reveal">Each video plays the prefix, the request, then every method’s continuation, scored against five constraints.</p>
+    <div class="cmp-controls reveal">
+      <div class="seg" id="cmpTabs" role="tablist" aria-label="Comparison example"></div>
+      <button class="btn btn-sm btn-more" id="cmpMore" aria-controls="cmpTabs" aria-expanded="false">Show more examples</button>
     </div>
+    <div class="cmp reveal">
+      <div class="video-frame glow-frame"><video id="cmpVideo" controls playsinline preload="metadata"></video></div>
+      <aside class="cmp-side card">
+        <p class="meta" id="cmpMeta"></p>
+        <h3 id="cmpTitle"></h3>
+        <p class="req" id="cmpReq"></p>
+        <ul class="verdicts" id="cmpVerdicts"></ul>
+        <table class="cons" id="cmpCons" hidden></table>
+      </aside>
+    </div>
+  </div>
 </section>
 
 <!-- ======================= INTERACTIVE DEMO ======================= -->
-<section class="band" id="demo">
+<section class="section" id="demo">
   <div class="wrap-wide">
-    <p class="kicker">Interactive demo</p>
-    <h2>Pause the story. Ask anything.</h2>
-    <p class="lede">These are real viewing sessions from our formative study. The story pauses where a viewer stopped it, and you choose what to ask. Every question is one a real viewer typed, and every answer was generated live by the system and inserted at the next scene boundary. Skip a question and the story simply carries on.</p>
+    <p class="kicker reveal"><span class="kn">05</span>Try it</p>
+    <h2 class="reveal">Pause the story.<br>Ask anything.</h2>
+    <p class="lede reveal">Real sessions from our formative study. Every question was typed by a viewer; every answer was generated live.</p>
 
-    <div class="demo-controls">
+    <div class="demo-controls reveal">
       <div class="seg" id="topicTabs" role="tablist" aria-label="Topic"></div>
       <div class="seg seg-small" id="sessionTabs" role="tablist" aria-label="Viewing session"></div>
     </div>
 
-    <div class="demo">
-      <div class="player" id="demoPlayer">
+    <div class="demo reveal">
+      <div class="player glow-frame" id="demoPlayer">
         <video id="demoVideo" playsinline preload="metadata"></video>
         <div class="answer-band" id="answerBand" hidden>
           <span class="answer-tag">Generated answer</span>
@@ -168,17 +276,17 @@
         </div>
         <div class="start-overlay" id="demoStart">
           <button class="big-play" id="demoStartBtn" aria-label="Start the session"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button>
-          <p>Press play. The story will stop when it's your turn to ask.</p>
+          <p>The story stops when it’s your turn to ask.</p>
         </div>
         <div class="ask-overlay" id="askOverlay" hidden>
           <div class="ask-card">
             <div class="ask-head"><span class="pause-icon" aria-hidden="true"></span><span>Paused. What would you like to ask?</span></div>
             <div class="ask-chips" id="askChips"></div>
             <div class="ask-actions">
-              <button class="btn btn-dark" id="askBtn" disabled>Ask</button>
+              <button class="btn btn-glow" id="askBtn" disabled>Ask</button>
               <button class="btn" id="skipBtn">Keep watching</button>
             </div>
-            <p class="ask-note">Questions shown are the ones a real viewer asked at this moment.</p>
+            <p class="ask-note">These are the questions a real viewer asked here.</p>
           </div>
         </div>
         <div class="toast" id="demoToast" hidden></div>
@@ -190,111 +298,96 @@
           <button class="pb-btn" id="pbFull" aria-label="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
         </div>
       </div>
-      <aside class="demo-side">
+      <aside class="demo-side card">
         <h3 id="demoTitle"></h3>
         <p class="meta" id="demoMeta"></p>
         <ol class="qlog" id="qLog"></ol>
-        <p class="side-note">Markers on the progress bar show where the story will pause. Your choices only change what plays here. Apart from removing title cards and relabelling answers, the sessions are shown as they were generated.</p>
+        <p class="side-note">Markers on the bar show where the story pauses.</p>
       </aside>
     </div>
+
     <div class="formative">
-      <h3 class="sub">Formative study: interaction helps viewers learn</h3>
-      <p>Nine volunteers watched knowledge-grounded videos with and without the ability to interrupt; seven passed the attention test. Learning gain is post-test minus pre-test accuracy, in percentage points.</p>
-      <div class="viz-grid">
-        <div class="viz" id="vizGains">
-      <h4>Within-participant learning gains</h4><p class="viz-sub">Each grey line is one participant; blue is the mean.</p>
-      
-      <div class="viz-legend"></div>
-      <div class="viz-svg"></div>
-      
-      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
-    </div>
-        <div class="viz" id="vizRatings">
-      <h4>Interactive experience ratings</h4><p class="viz-sub">Four respondents, 1 = strongly disagree, 5 = strongly agree.</p>
-      
-      <div class="viz-legend"></div>
-      <div class="viz-svg"></div>
-      
-      <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
-    </div>
+      <div class="formative-head reveal">
+        <h3>Interaction helped viewers learn</h3>
+        <div class="vs">
+          <div><b data-count="47.9" data-decimals="1" data-prefix="+">+47.9</b><span>pts with interaction</span></div>
+          <div class="dim"><b data-count="32.1" data-decimals="1" data-prefix="+">+32.1</b><span>pts without</span></div>
+        </div>
+        <p>Pre-to-post learning gain, seven participants who passed the attention test.</p>
       </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ======================= COMPARISONS ======================= -->
-<section class="band" id="compare">
-  <div class="wrap-wide">
-    <p class="kicker">Comparison</p>
-    <h2>Same inputs, same backbone, different grounding</h2>
-    <p class="lede">Each example plays the shared prefix, the viewer request, and then every method’s continuation in turn (Omni-1.1-Flash backbone), with notes on what each gets right or wrong.</p>
-    <div class="seg" id="cmpTabs" role="tablist" aria-label="Comparison example"></div>
-    <div class="cmp">
-      <div class="video-frame"><video id="cmpVideo" controls playsinline preload="metadata"></video></div>
-      <aside class="cmp-side">
-        <p class="meta" id="cmpMeta"></p>
-        <h3 id="cmpTitle"></h3>
-        <p class="req" id="cmpReq"></p>
-        <ul class="verdicts" id="cmpVerdicts"></ul>
-      </aside>
+      <div class="viz-grid">
+        <div class="viz reveal" id="vizGains">
+          <h4>Within-participant learning gains</h4><p class="viz-sub">Grey: one participant. Blue: the mean.</p>
+          <div class="viz-legend"></div>
+          <div class="viz-svg"></div>
+          <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+        </div>
+        <div class="viz reveal" id="vizRatings">
+          <h4>Experience ratings</h4><p class="viz-sub">Four respondents, 1–5 scale.</p>
+          <div class="viz-legend"></div>
+          <div class="viz-svg"></div>
+          <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ======================= FAILURES ======================= -->
-<section class="band" id="failures">
+<section class="section" id="failures">
   <div class="wrap-wide">
-    <p class="kicker">Limitations</p>
-    <h2>Where it still falls short</h2>
-    <div class="viz viz-spaced" id="vizSeverity">
-      <h4>Score distribution in a 72-output analysis sample</h4><p class="viz-sub">Most outputs keep the main context (≥ 75), but perfect scores are rarer, especially for story continuity and interaction fulfillment.</p>
-      
+    <p class="kicker reveal"><span class="kn">06</span>Limitations</p>
+    <h2 class="reveal">Where it still falls short.</h2>
+    <p class="lede reveal">Most outputs keep the main context. Perfect scores are rarer.</p>
+    <div class="viz reveal" id="vizSeverity">
+      <h4>Score distribution, 72-output analysis sample</h4><p class="viz-sub">Share of outputs per score band.</p>
       <div class="viz-legend"></div>
       <div class="viz-svg"></div>
-      
       <details class="viz-data"><summary>Show data</summary><div class="viz-table"></div></details>
     </div>
+
     <div class="grid3" id="failGrid"></div>
 
-    <h3 class="lim-head">Limits inherited from the video generator</h3>
-    <p class="lim-lede">Some errors come from the video model rather than from contextual grounding. In the formative-study sessions on the AWR paper, the narration is correct but the rendered visuals are not.</p>
+    <h3 class="lim-head reveal">Inherited from the video generator</h3>
     <div class="grid3 lim-shots">
-      <figure><img src="assets/img/lim_equation.jpg" alt="Glass board showing an invented pi-i of tau formula" loading="lazy" width="1280" height="720">
-        <figcaption>P3 asks about “mu-k of tau”; the board shows an invented π<sub>i</sub>(τ) formula.<small>AWR session · P3 · 2:30</small></figcaption></figure>
-      <figure><img src="assets/img/lim_misspelled.jpg" alt="Glass board with the misspelled word Lagrengion and nonsense terms" loading="lazy" width="1280" height="720">
-        <figcaption>Misspelled “Lagrengion” and nonsense terms while explaining on- vs. off-policy learning.<small>AWR session · P5 · 0:42</small></figcaption></figure>
-      <figure><img src="assets/img/lim_chart.jpg" alt="Benchmark dashboard with plausible-looking but meaningless charts" loading="lazy" width="1280" height="720">
-        <figcaption>Dashboard charts look plausible but carry no real data.<small>AWR session · P2 · 1:12</small></figcaption></figure>
+      <figure class="reveal zoom"><img src="assets/img/lim_equation.jpg" alt="Glass board showing an invented pi-i of tau formula" loading="lazy" width="1280" height="720">
+        <figcaption>Invented π<sub>i</sub>(τ) formula<small>AWR session · P3</small></figcaption></figure>
+      <figure class="reveal zoom"><img src="assets/img/lim_misspelled.jpg" alt="Glass board with the misspelled word Lagrengion and nonsense terms" loading="lazy" width="1280" height="720">
+        <figcaption>Misspelled “Lagrengion”<small>AWR session · P5</small></figcaption></figure>
+      <figure class="reveal zoom"><img src="assets/img/lim_chart.jpg" alt="Benchmark dashboard with plausible-looking but meaningless charts" loading="lazy" width="1280" height="720">
+        <figcaption>Charts with no real data<small>AWR session · P2</small></figcaption></figure>
     </div>
     <div class="lim-cards">
-      <div class="lim-card audio"><h4>Audio inconsistency</h4>
-        <p>Shots are synthesized separately, so a character’s voice, loudness and background ambience can drift from shot to shot. Our metrics don’t capture this: video quality is scored on sampled frames, not audio.</p></div>
-      <div class="lim-card symbols"><h4>Unfaithful text, equations and charts</h4>
-        <p>The script decides what to explain, but the renderer draws its own symbols: misspelled terms, invented variables, data-free plots. Our verifier checks events and entities, not symbolic correctness.</p></div>
+      <div class="lim-card audio reveal"><h4>Audio drift</h4><p>Shots are synthesized separately, so voices and ambience can change between them.</p></div>
+      <div class="lim-card symbols reveal"><h4>Unfaithful symbols</h4><p>The renderer draws its own text, equations and plots; our verifier checks events, not symbols.</p></div>
     </div>
-    <p class="lim-future"><b>Future work:</b> composite exact overlays (LaTeX, real plots) instead of generating them; audio-aware verification and a fixed voice per character.</p>
   </div>
 </section>
 
-<section class="wrap" id="bibtex">
-  <h2>BibTeX</h2>
-  <div class="bib"><button class="copy" id="copyBib">Copy</button><pre id="bibText">@article{li2026interactive,
-  title   = {Interactive Video Storytelling with Contextual Grounding},
+<!-- ======================= BIBTEX ======================= -->
+<section class="section" id="bibtex">
+  <div class="wrap">
+    <h2 class="reveal">BibTeX</h2>
+    <div class="bib reveal"><button class="copy" id="copyBib">Copy</button><pre id="bibText">@article{li2026visground,
+  title   = {{VIS-Ground}: Video Interactive Storytelling with Contextual Grounding},
   author  = {Li, Bingxuan and Song, Yiwen and Wu, Xueqing and Pan, Yanzhou and Li, Yang and
              Su, Kuang and Liu, Jingyun and Ko, Sebastian and Zhang, Huan and Zhang, Tong and
              Peng, Nanyun and Pfister, Tomas and Song, Yale},
   journal = {arXiv preprint},
   year    = {2026}
 }</pre></div>
+  </div>
 </section>
 
 <footer>
-  <p>Interactive Video Storytelling with Contextual Grounding · Google · University of Illinois Urbana-Champaign · UCLA</p>
+  <p><span class="wm"><span class="b">V</span><span class="r">I</span><span class="y">S</span>-<span class="b">G</span><span class="g">r</span><span class="r">o</span><span class="b">u</span><span class="r">n</span><span class="y">d</span></span> · Google · University of Illinois Urbana-Champaign · UCLA</p>
 </footer>
+
+<div class="lightbox" id="lightbox" hidden><img alt=""><button class="lb-close" aria-label="Close">×</button></div>
 
 <script src="assets/data.js"></script>
 <script src="assets/app.js"></script>
 <script src="assets/charts.js"></script>
+<script src="assets/fx.js"></script>
 </body>
 </html>

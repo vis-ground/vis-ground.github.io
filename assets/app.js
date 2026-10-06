@@ -17,7 +17,7 @@
   function tabs(container, items, onSelect, initial = 0) {
     container.innerHTML = "";
     const btns = items.map((label, i) => {
-      const b = el("button", null, esc(label));
+      const b = el("button", null, typeof label === "string" ? esc(label) : label.html);
       b.setAttribute("role", "tab");
       b.addEventListener("click", () => select(i));
       container.appendChild(b);
@@ -370,59 +370,99 @@
   /* =============================================================
      3. Comparisons, failures, results
      ============================================================= */
+  // featured examples are shown by default; the rest sit behind "Show more"
   const COMPARE = [
-    { file: "compare_glasses", tab: "History of glasses", meta: "Knowledge grounding · Cinematic", title: "The Evolution of Sight: A History of Glasses",
-      req: "What were the earliest historical uses of glasses before they were used for vision? Please give a direct explanation.",
-      v: ["Leaves the requested period", "Shows glasses aiding vision", "Drifts to modern sunglasses", "Continuous, faithful, on scope"] },
-    { file: "compare_peter", tab: "Peter Rabbit (cut-out)", meta: "Narrative grounding · Cut-out animation", title: "Peter Rabbit and the Crow's Call",
-      req: "Continue following Peter's train of thought and provide a balanced look at what he recalls about the crow's nesting habits.",
-      v: ["Loops the same line", "Loses the hiding place", "Invents facts, runs ahead", "Keeps state, follows source"] },
-    { file: "compare_ralph", tab: "Ralph's journey", meta: "Narrative grounding · Cinematic", title: "Ralph's Long Journey",
-      req: "Move the story forward to when Ralph finally completes the journey to his friend George's house. Keep a balanced presentation of the final events.",
-      v: ["Style changes, dialogue loops", "Loses Ralph's identity", "Silent; ending not conveyed", "Continuous; full ending narrated"] },
-    { file: "compare_loan", tab: "Student loan", meta: "Knowledge grounding · Cut-out animation", title: "The Cost of Education: Eric Hahn's Loan Crisis",
-      req: "What happened next with his 8 percent private loan? Show the effect of the situation.",
-      v: ["Rushed, scattered facts", "Skips the suspension", "Skips the suspension", "Answers what happened next"] },
+    { file: "compare_ralph_break", featured: true, tab: "Ralph's rest stop", grounding: "Narrative", style: "Cinematic", title: "Ralph's Long Journey",
+      req: "Let's follow him as he takes a well-deserved break.",
+      v: ["Brings Benny back; Ralph turns cartoon", "Leaves the lake; Ralph unrecognizable", "Leaves the lake; the lunch stop is silent", "At the lake, Ralph voices his lunch stop"],
+      cons: [["Pick up at the lake, as Ralph flies on from Walter", "1001"], ["Rest stop: bread from home, then a pig walks up", "1111"],
+        ["No earlier events return (Benny stays in the jungle)", "0111"], ["Voice Ralph's own experience of the rest stop", "1001"],
+        ["Ralph stays the same photoreal bee", "0001"]] },
+    { file: "compare_bike", featured: true, tab: "Bicycle chain care", grounding: "Knowledge", style: "2D animation", title: "How to Maintain Your Bicycle",
+      req: "How much lube goes on the chain, and why wipe it off after?",
+      v: ["Explains, but leaves the prefix's world", "Only says why to wipe", "Says it but never shows it; prefix lost", "Reuses the blueprint and shows dirt collecting"],
+      cons: [["Say how much lube: a small drop on each rivet", "1011"], ["Reuse the prefix's blueprint cutaway to explain", "0001"],
+        ["Say why wipe: excess lube makes dirt collect", "1111"], ["Show on screen how excess lube collects dirt", "0001"],
+        ["Return to the prefix's barn workshop and olive MTB", "0001"]] },
+    { file: "compare_peter_crow", tab: "Peter and the crow's call", grounding: "Narrative", style: "Cinematic", title: "Peter Rabbit and the Crow's Call",
+      req: "Let Peter try to decide his next move.",
+      v: ["Shows the crow, but Peter never reacts", "No crow call; Peter never hears the news", "Peter understands, but no crow is shown", "Blacky calls and Peter understands; runs ahead at the end"],
+      cons: [["Peter under the brush pile, just awake from his nap", "1111"], ["Show what interrupts him: Blacky the Crow calling", "1001"],
+        ["Peter understands the call: Reddy Fox has been found", "0011"], ["Stop there: wondering about Blacky's nest comes later", "0000"],
+        ["No narrator: character speech or silence", "1111"]] },
+    { file: "compare_bike_bearing", tab: "Bicycle bearings", grounding: "Knowledge", style: "2D animation", title: "How to Maintain Your Bicycle",
+      req: "Explain simply: what's a bearing and why does it need grease?",
+      v: ["Explains it, but no analogy or grease film", "Keeps the look; wrong explanation", "Changes the look; never explains", "Acted-out analogy, grease film shown"],
+      cons: [["Keep Rusty & the kid in the prefix 2D look", "1101"], ["Show simply how a bearing works: it rolls", "1001"],
+        ["Correctly explain why grease: less friction/wear", "1001"], ["Teach via a simple acted-out analogy, like the prefix", "0001"],
+        ["Show grease film keeping the metal surfaces apart", "0001"]] },
   ];
-  const METHODS = ["Direct Generation", "MM-StoryAgent", "MovieAgent", "VideoTaleInteract (ours)"];
+  const METHODS = ["Direct Generation", "MM-StoryAgent", "MovieAgent", "VIS-Ground (ours)"];
 
   function initCompare() {
-    tabs($("cmpTabs"), COMPARE.map((c) => c.tab), (i) => {
+    let current = 0, open = false;
+    const gtag = (c) => `<span class="gtag ${c.grounding.toLowerCase()}">${c.grounding}</span>`;
+    const select = tabs($("cmpTabs"), COMPARE.map((c) => ({ html: gtag(c) + esc(c.tab) })), (i) => {
       const c = COMPARE[i];
+      current = i;
       const v = $("cmpVideo");
       v.pause();
       v.src = `assets/videos/${c.file}.mp4`;
       v.poster = `assets/videos/${c.file}.jpg`;
-      $("cmpMeta").textContent = c.meta;
+      $("cmpMeta").innerHTML = `${gtag(c)} grounding · ${esc(c.style)}`;
       $("cmpTitle").textContent = c.title;
       $("cmpReq").textContent = "“" + c.req + "”";
       const ul = $("cmpVerdicts");
       ul.innerHTML = "";
       c.v.forEach((txt, k) => {
-        const li = el("li", k === 3 ? "ours" : "", `<b>${METHODS[k]}</b><span>${esc(txt)}</span>`);
+        const score = c.cons ? `<em>${c.cons.filter((r) => r[1][k] === "1").length}/${c.cons.length}</em>` : "";
+        const li = el("li", k === 3 ? "ours" : "", `<b>${METHODS[k]}</b><span>${esc(txt)}</span>${score}`);
         ul.appendChild(li);
       });
+      const t = $("cmpCons");
+      t.hidden = !c.cons;
+      if (c.cons) {
+        t.innerHTML = `<thead><tr><th>Constraint</th><th title="Direct Generation">DG</th><th title="MM-StoryAgent">MM</th><th title="MovieAgent">MA</th><th class="ours">Ours</th></tr></thead><tbody>` +
+          c.cons.map(([txt, marks]) => `<tr><td>${esc(txt)}</td>${[...marks].map((m, k) =>
+            `<td class="${m === "1" ? "pass" : "fail"}${k === 3 ? " ours" : ""}" aria-label="${m === "1" ? "satisfied" : "violated"}">${m === "1" ? "✓" : "✗"}</td>`).join("")}</tr>`).join("") + "</tbody>";
+      }
     });
+
+    // show only the featured examples until "Show more" is pressed
+    const btns = [...$("cmpTabs").children];
+    const more = $("cmpMore");
+    const extra = COMPARE.filter((c) => !c.featured).length;
+    const render = () => {
+      btns.forEach((b, i) => (b.hidden = !open && !COMPARE[i].featured));
+      more.setAttribute("aria-expanded", String(open));
+      more.textContent = open ? "Show fewer" : `Show ${extra} more examples`;
+    };
+    more.addEventListener("click", () => {
+      open = !open;
+      if (!open && !COMPARE[current].featured) select(0);
+      render();
+    });
+    render();
   }
 
   const FAILS = [
-    { file: "failure_1_ralph", title: "Request–source trade-off",
-      req: "Continue the story as Ralph leaves the jungle to continue his long journey. Focus on the environmental details of the next place he travels through.",
-      text: "Following the environment-focused request crowded out required story events. The continuation is continuous and on-request, but incomplete with respect to the source." },
-    { file: "failure_2_glasses_steps", title: "Dependency extraction error",
-      req: "How did the transition to using glasses for vision correction happen? Show me step by step.",
-      text: "The step-by-step request required recovering the source's ordered chain (Bacon → di Spina). One prerequisite was missed and a later event was pulled forward." },
-    { file: "failure_3_glasses_render", title: "Unfaithful rendering",
-      req: "How did inventors continue to improve the design of glasses after Kepler's discovery? Show me using an example-based approach.",
-      text: "The planned script satisfied its constraints, but the video generator did not realize the planned identities and objects. Script-level validity does not guarantee faithful rendering." },
+    { file: "failure_1_ralph", tag: "Trade-off", title: "Request vs. source",
+      req: "Focus on the environmental details of the next place he travels through.",
+      text: "Following the request crowded out story events the source requires." },
+    { file: "failure_2_glasses_steps", tag: "Extraction", title: "Missed dependency",
+      req: "How did the transition to glasses for vision correction happen? Step by step.",
+      text: "One prerequisite in the source's ordered chain was missed." },
+    { file: "failure_3_glasses_render", tag: "Rendering", title: "Unfaithful render",
+      req: "How did inventors improve glasses after Kepler? Use examples.",
+      text: "A valid script, but the generator didn't draw the planned people and objects." },
   ];
 
   function initFails() {
     const g = $("failGrid");
     FAILS.forEach((f) => {
-      const card = el("div", "fcard");
+      const card = el("div", "fcard glow-card reveal");
       card.innerHTML = `<div class="video-frame"><video controls playsinline preload="none" poster="assets/videos/${f.file}.jpg"><source src="assets/videos/${f.file}.mp4" type="video/mp4"></video></div>
-        <h3>${esc(f.title)}</h3><p class="req">“${esc(f.req)}”</p><p>${esc(f.text)}</p>`;
+        <span class="ftag">${esc(f.tag)}</span><h3>${esc(f.title)}</h3><p class="req">“${esc(f.req)}”</p><p>${esc(f.text)}</p>`;
       g.appendChild(card);
     });
   }
@@ -434,25 +474,27 @@
       ["MM-StoryAgent", [90.6, 59.4, 81.2, 77.1, 44.0, 59.4], [37.5, 34.4, 40.6, 37.5, 53.4, 64.9], 57.3, "41.15, 73.44"],
       ["MovieAgent", [85.4, 67.7, 85.4, 79.5, 46.6, 60.9], [65.6, 46.9, 65.6, 59.4, 47.1, 60.4], 69.4, "57.29, 81.60"],
       ["VideoGen-of-Thought", [89.6, 56.3, 86.5, 77.4, 42.7, 58.1], [69.5, 54.2, 75.3, 66.3, 52.4, 63.4], 71.9, "64.50, 78.70"],
-      ["VideoTaleInteract", [92.7, 81.3, 90.6, 88.2, 53.0, 62.4], [87.5, 78.1, 75.0, 80.2, 65.4, 68.2], 84.2, "77.78, 90.45"],
+      ["VIS-Ground", [92.7, 81.3, 90.6, 88.2, 53.0, 62.4], [87.5, 78.1, 75.0, 80.2, 65.4, 68.2], 84.2, "77.78, 90.45"],
     ],
     "Veo 3.1": [
       ["Direct Generation", [76.8, 62.5, 80.4, 73.2, 39.2, 49.7], [62.5, 70.8, 62.5, 65.3, 49.7, 58.5], 69.3, "57.34, 79.37"],
       ["MM-StoryAgent", [70.5, 41.1, 70.5, 60.7, 32.2, 56.1], [50.0, 66.7, 60.4, 59.0, 57.4, 62.4], 59.9, "45.73, 72.07"],
       ["MovieAgent", [89.3, 57.2, 86.6, 77.7, 38.5, 59.7], [64.6, 56.3, 58.3, 59.7, 47.5, 65.7], 68.7, "56.85, 76.39"],
       ["VideoGen-of-Thought", [78.6, 58.0, 81.3, 72.6, 43.7, 60.1], [84.4, 25.0, 72.9, 60.8, 44.3, 62.5], 66.7, "58.55, 74.08"],
-      ["VideoTaleInteract", [92.9, 83.0, 84.8, 86.9, 55.9, 62.4], [93.8, 75.0, 78.1, 82.3, 54.8, 64.2], 84.6, "80.95, 88.39"],
+      ["VIS-Ground", [92.9, 83.0, 84.8, 86.9, 55.9, 62.4], [93.8, 75.0, 78.1, 82.3, 54.8, 64.2], 84.6, "80.95, 88.39"],
     ],
     "MiniMax-H3": [
       ["Direct Generation", [67.0, 42.0, 57.1, 55.4, 34.3, 45.2], [25.0, 6.3, 31.3, 20.8, 20.5, 45.8], 38.1, "27.23, 49.11"],
       ["MM-StoryAgent", [78.6, 57.1, 80.4, 72.0, 39.5, 44.0], [81.3, 31.3, 65.6, 59.4, 43.8, 45.0], 65.7, "55.06, 76.34"],
       ["MovieAgent", [78.6, 65.2, 75.0, 72.9, 39.0, 46.4], [93.8, 58.3, 81.3, 77.8, 54.2, 57.3], 75.4, "68.21, 81.70"],
       ["VideoGen-of-Thought", [67.7, 56.3, 74.0, 66.0, 37.9, 42.6], [79.2, 39.6, 72.9, 63.9, 45.5, 50.2], 64.9, "57.64, 71.35"],
-      ["VideoTaleInteract", [84.4, 70.8, 77.1, 77.4, 46.1, 47.8], [87.5, 71.9, 81.3, 80.2, 46.7, 58.7], 78.8, "75.52, 81.42"],
+      ["VIS-Ground", [84.4, 70.8, 77.1, 77.4, 46.1, 47.8], [87.5, 71.9, 81.3, 80.2, 46.7, 58.7], 78.8, "75.52, 81.42"],
     ],
   };
 
   window.PAPER_T1 = T;
+
+  const WORDMARK = '<span class="wm"><span class="b">V</span><span class="r">I</span><span class="y">S</span>-<span class="b">G</span><span class="g">r</span><span class="r">o</span><span class="b">u</span><span class="r">n</span><span class="y">d</span></span>';
 
   function initTable() {
     const cols = ["SF", "SC", "IF", "JCS", "VC", "VQ"];
@@ -462,10 +504,10 @@
       const best = (g, c) => Math.max(...rows.map((r) => r[g][c]));
       const bestComp = Math.max(...rows.map((r) => r[3]));
       rows.forEach((r) => {
-        const ours = r[0] === "VideoTaleInteract";
+        const ours = r[0] === "VIS-Ground";
         [1, 2].forEach((g) => {
           h += `<tr class="${ours ? "ours" : ""} ${g === 2 ? "r2" : ""}">`;
-          h += g === 1 ? `<td rowspan="2" class="m">${r[0]}</td>` : "";
+          h += g === 1 ? `<td rowspan="2" class="m">${ours ? WORDMARK : r[0]}</td>` : "";
           h += `<td class="g">${g === 1 ? "Narrative" : "Knowledge"}</td>`;
           r[g].forEach((x, c) => (h += `<td class="${x === best(g, c) ? "best" : ""}">${x.toFixed(1)}</td>`));
           if (g === 1) h += `<td rowspan="2" class="comp ${r[3] === bestComp ? "best" : ""}">${r[3].toFixed(1)}<small>[${r[4]}]</small></td>`;

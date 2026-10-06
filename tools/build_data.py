@@ -152,11 +152,12 @@ if __name__ == "__main__":
     V = os.path.join(ROOT, "videos")
     other = [
         {"in": os.path.join(ROOT, "teaser", "teaser.mp4"), "out": f"{WEB}/assets/videos/teaser.mp4", "crf": 23, "h": 1080},
-        {"in": f"{V}/01_task_illustration.mp4", "out": f"{WEB}/assets/videos/task_illustration.mp4", "crf": 25, "h": 1080},
     ]
-    for n in ["02_compare_glasses", "02_compare_peter", "02_compare_ralph", "02_compare_loan",
-              "03_failure_1_ralph", "03_failure_2_glasses_steps", "03_failure_3_glasses_render"]:
+    for n in ["03_failure_1_ralph", "03_failure_2_glasses_steps", "03_failure_3_glasses_render"]:
         other.append({"in": f"{V}/{n}.mp4", "out": f"{WEB}/assets/videos/{n[3:]}.mp4", "crf": 25, "h": 1080})
+    for src, out in [("example/ralph", "compare_ralph_break"), ("example/knowledge_bike", "compare_bike"),  # featured
+                     ("short_videos/peter_i02_cinematic_keyshots", "compare_peter_crow"), ("short_videos/knowledge_bike_q5", "compare_bike_bearing")]:
+        other.append({"in": os.path.join(ROOT, f"{src}.mp4"), "out": f"{WEB}/assets/videos/{out}.mp4", "crf": 25, "h": 1080, "poster_t": 75})
     data = {"real": real, "stories": stories}
     with open(f"{WEB}/assets/data.js", "w") as f:
         f.write("window.SITE_DATA = " + json.dumps(data, indent=1, ensure_ascii=False) + ";\n")

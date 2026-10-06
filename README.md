@@ -1,6 +1,6 @@
-# VideoTaleInteract project page
+# VIS-Ground project page
 
-Static site (no build step): `index.html`, `assets/style.css`, `assets/app.js`, `assets/data.js`.
+Static site (no build step): `index.html`, `assets/style.css`, `assets/app.js` (demo, comparisons, table), `assets/charts.js` (interactive charts), `assets/fx.js` (scroll animations, nav, lightbox, teaser sound), `assets/data.js`.
 
 ## Preview locally
 

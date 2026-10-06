@@ -6,14 +6,16 @@
   const METRICS = ["SF", "SC", "IF", "JCS", "VC", "VQ"];
   const METRIC_NAMES = { SF: "Source faithfulness", SC: "Story continuity", IF: "Interaction fulfillment",
     JCS: "Joint constraint satisfaction", VC: "Visual consistency", VQ: "Video quality" };
-  const METHODS = ["VideoTaleInteract", "Direct Generation", "MM-StoryAgent", "MovieAgent", "VideoGen-of-Thought"];
-  const COLOR = { "VideoTaleInteract": "#2a78d6", "Direct Generation": "#eb6834", "MM-StoryAgent": "#1baf7a",
+  const METHODS = ["VIS-Ground", "Direct Generation", "MM-StoryAgent", "MovieAgent", "VideoGen-of-Thought"];
+  const COLOR = { "VIS-Ground": "#2a78d6", "Direct Generation": "#eb6834", "MM-StoryAgent": "#1baf7a",
     "MovieAgent": "#eda100", "VideoGen-of-Thought": "#e87ba4" };
   const BACKBONES = Object.keys(T1);
   const SHAPE = { "Omni-1.1-Flash": "circle", "Veo 3.1": "square", "MiniMax-H3": "diamond" };
   const INK = "#111318", INK2 = "#3c4250", MUTED = "#6b7280", GRID = "#eceef2", AXIS = "#d5d8de";
+  const SURF = "#fff", DARK_TXT = "#111318"; // chart surface and text on light fills
   const POS = "#2a78d6", NEG = "#e34948";
   const NS = "http://www.w3.org/2000/svg";
+  const WM = "bryxbgrbry", WM_FILL = { b: "#4285f4", r: "#ea4335", y: "#fbbc05", g: "#34a853" };
 
   /* ---------- helpers ---------- */
   const row = (bb, m) => T1[bb].find((r) => r[0] === m);
@@ -34,13 +36,20 @@
   }
   function text(parent, x, y, str, attrs = {}) {
     const t = s("text", { x, y, fill: INK2, "font-size": 12, ...attrs }, parent);
-    t.textContent = str;
+    if (str === "VIS-Ground") {
+      // wordmark, letter colours as in the paper
+      t.setAttribute("font-style", "italic");
+      [...str].forEach((c, i) => {
+        const fill = WM[i] === "x" ? attrs.fill || INK2 : WM_FILL[WM[i]];
+        s("tspan", { fill }, t).textContent = c;
+      });
+    } else t.textContent = str;
     return t;
   }
   function marker(parent, shape, cx, cy, r, fill) {
-    if (shape === "square") return s("rect", { x: cx - r * 0.9, y: cy - r * 0.9, width: r * 1.8, height: r * 1.8, rx: 2, fill, stroke: "#fff", "stroke-width": 2 }, parent);
-    if (shape === "diamond") return s("path", { d: `M${cx},${cy - r * 1.25}L${cx + r * 1.25},${cy}L${cx},${cy + r * 1.25}L${cx - r * 1.25},${cy}Z`, fill, stroke: "#fff", "stroke-width": 2 }, parent);
-    return s("circle", { cx, cy, r, fill, stroke: "#fff", "stroke-width": 2 }, parent);
+    if (shape === "square") return s("rect", { x: cx - r * 0.9, y: cy - r * 0.9, width: r * 1.8, height: r * 1.8, rx: 2, fill, stroke: SURF, "stroke-width": 2 }, parent);
+    if (shape === "diamond") return s("path", { d: `M${cx},${cy - r * 1.25}L${cx + r * 1.25},${cy}L${cx},${cy + r * 1.25}L${cx - r * 1.25},${cy}Z`, fill, stroke: SURF, "stroke-width": 2 }, parent);
+    return s("circle", { cx, cy, r, fill, stroke: SURF, "stroke-width": 2 }, parent);
   }
 
   /* ---------- tooltip ---------- */
@@ -182,7 +191,7 @@
     if (!host) return;
     segControl(host, ".viz-bb", ["Average", ...BACKBONES], bb, (v) => { bb = v; host._rerender(); });
     segControl(host, ".viz-set", ["Equal weights", "Narrative", "Knowledge"], setting, (v) => { setting = v; host._rerender(); });
-    legend(host, METHODS.map((m) => ({ label: m === "VideoTaleInteract" ? "VideoTaleInteract (ours)" : m, color: COLOR[m] })), (label, on) => {
+    legend(host, METHODS.map((m) => ({ label: m === "VIS-Ground" ? "VIS-Ground (ours)" : m, color: COLOR[m] })), (label, on) => {
       const m = label.replace(" (ours)", "");
       on ? hidden.delete(m) : hidden.add(m);
       host._rerender();
@@ -207,16 +216,16 @@
       const hair = s("line", { y1: m.t, y2: H - m.b, stroke: AXIS, "stroke-width": 1, opacity: 0 }, svg);
       const shown = METHODS.filter((mm) => !hidden.has(mm));
       [...shown].reverse().forEach((mm) => {
-        const ours = mm === "VideoTaleInteract";
+        const ours = mm === "VIS-Ground";
         const pts = METRICS.map((k, i) => [x(i), y(v(mm, k))]);
         s("path", { d: "M" + pts.map((p) => p.join(",")).join("L"), fill: "none", stroke: COLOR[mm],
           "stroke-width": ours ? 3 : 2, "stroke-linejoin": "round", "stroke-linecap": "round", opacity: ours ? 1 : 0.9 }, svg);
-        pts.forEach((p) => s("circle", { cx: p[0], cy: p[1], r: ours ? 4.5 : 3.5, fill: COLOR[mm], stroke: "#fff", "stroke-width": 2 }, svg));
+        pts.forEach((p) => s("circle", { cx: p[0], cy: p[1], r: ours ? 4.5 : 3.5, fill: COLOR[mm], stroke: SURF, "stroke-width": 2 }, svg));
       });
       // direct label: ours at the right end (selective)
-      if (!hidden.has("VideoTaleInteract") && W >= 560) {
-        const yy = y(v("VideoTaleInteract", "VQ"));
-        text(svg, x(5) + 12, yy + 4, "VideoTaleInteract", { fill: INK, "font-weight": 700 });
+      if (!hidden.has("VIS-Ground") && W >= 560) {
+        const yy = y(v("VIS-Ground", "VQ"));
+        text(svg, x(5) + 12, yy + 4, "VIS-Ground", { fill: INK, "font-weight": 700 });
       }
       // crosshair hit layer
       const hit = s("rect", { x: m.l - step / 2, y: m.t, width: W - m.l - m.r + step, height: H - m.t - m.b, fill: "transparent" }, svg);
@@ -228,7 +237,7 @@
         hair.setAttribute("x1", x(i)); hair.setAttribute("x2", x(i)); hair.setAttribute("opacity", 1);
         const k = METRICS[i];
         const rows = shown.map((mm) => ({ mm, v: v(mm, k) })).sort((a, b) => b.v - a.v)
-          .map(({ mm, v: vv }) => ({ value: f1(vv), label: mm === "VideoTaleInteract" ? "VideoTaleInteract (ours)" : mm, color: COLOR[mm], strong: mm === "VideoTaleInteract" }));
+          .map(({ mm, v: vv }) => ({ value: f1(vv), label: mm === "VIS-Ground" ? "VIS-Ground (ours)" : mm, color: COLOR[mm], strong: mm === "VIS-Ground" }));
         showTip(e, `${METRIC_NAMES[k]} · ${bb === "Average" ? "avg. of 3 backbones" : bb}`, rows);
       };
       hit.addEventListener("pointermove", onMove);
@@ -243,7 +252,7 @@
      B. Composite across backbones (Fig. 5 left)
      ========================================================= */
   (() => {
-    const order = ["VideoTaleInteract", "MovieAgent", "VideoGen-of-Thought", "MM-StoryAgent", "Direct Generation"];
+    const order = ["VIS-Ground", "MovieAgent", "VideoGen-of-Thought", "MM-StoryAgent", "Direct Generation"];
     const host = mount("vizComposite", draw);
     if (!host) return;
     legend(host, BACKBONES.map((b) => ({ label: b, kind: "shape", shape: SHAPE[b], color: INK2 })));
@@ -262,8 +271,8 @@
         const cy = m.t + rowH * i + rowH / 2;
         const vals = BACKBONES.map((b) => row(b, mm)[3]);
         const mn = Math.min(...vals), mx = Math.max(...vals);
-        const ours = mm === "VideoTaleInteract";
-        text(svg, m.l - 12, cy + 4, ours ? "VideoTaleInteract" : mm, { "text-anchor": "end", fill: ours ? INK : INK2, "font-weight": ours ? 700 : 500, "font-size": 12.5 });
+        const ours = mm === "VIS-Ground";
+        text(svg, m.l - 12, cy + 4, ours ? "VIS-Ground" : mm, { "text-anchor": "end", fill: ours ? INK : INK2, "font-weight": ours ? 700 : 500, "font-size": 12.5 });
         s("line", { x1: x(mn), x2: x(mx), y1: cy, y2: cy, stroke: COLOR[mm], "stroke-width": 3, "stroke-linecap": "round", opacity: 0.35 }, svg);
         BACKBONES.forEach((b) => {
           const r = row(b, mm);
@@ -289,8 +298,8 @@
   (() => {
     const items = [];
     BACKBONES.forEach((b) => ["Narrative", "Knowledge"].forEach((st, g) => {
-      const ours = row(b, "VideoTaleInteract")[g + 1][3];
-      const base = T1[b].filter((r) => r[0] !== "VideoTaleInteract").map((r) => ({ m: r[0], v: r[g + 1][3] })).sort((a, c) => c.v - a.v)[0];
+      const ours = row(b, "VIS-Ground")[g + 1][3];
+      const base = T1[b].filter((r) => r[0] !== "VIS-Ground").map((r) => ({ m: r[0], v: r[g + 1][3] })).sort((a, c) => c.v - a.v)[0];
       items.push({ label: `${b.split(" ")[0].replace("-1.1-Flash", "")} · ${st}`, bb: b, st, ours, base, gain: ours - base.v });
     }));
     const host = mount("vizGain", draw);
@@ -314,7 +323,7 @@
         text(g, x(it.gain) + 8, y0 + rowH / 2 + 4, `+${f1(it.gain)}`, { fill: INK, "font-weight": 700 });
         hoverable(g, (e) => showTip(e, it.label, [
           { value: `+${f1(it.gain)}`, label: "JCS gain", color: POS, strong: true },
-          { value: f1(it.ours), label: "VideoTaleInteract" },
+          { value: f1(it.ours), label: "VIS-Ground" },
           { value: f1(it.base.v), label: `best baseline (${it.base.m})` }], g));
       });
       tableView(host, ["Backbone · setting", "Ours JCS", "Best baseline", "Baseline JCS", "Gain"],
@@ -335,8 +344,8 @@
     function draw(box, W) {
       const [b, st] = cur.split(" · ");
       const g = st === "Narrative" ? 1 : 2;
-      const base = T1[b].filter((r) => r[0] !== "VideoTaleInteract").sort((a, c) => c[g][2] - a[g][2])[0];
-      const ours = row(b, "VideoTaleInteract");
+      const base = T1[b].filter((r) => r[0] !== "VIS-Ground").sort((a, c) => c[g][2] - a[g][2])[0];
+      const ours = row(b, "VIS-Ground");
       const ks = ["SF", "SC", "IF", "JCS"];
       const d = ks.map((k) => ({ k, o: ours[g][METRICS.indexOf(k)], b: base[g][METRICS.indexOf(k)] })).map((r) => ({ ...r, v: r.o - r.b }));
       host.querySelector(".viz-note").textContent = `Compared with ${base[0]}, the baseline with the highest Interaction Fulfillment in this setting.`;
@@ -361,7 +370,7 @@
         text(svg, cx, H - 10, r.k, { "text-anchor": "middle", fill: INK2, "font-weight": 600 });
         hoverable(gg, (e) => showTip(e, `${METRIC_NAMES[r.k]} · ${cur}`, [
           { value: `${up ? "+" : ""}${f1(r.v)}`, label: "difference", color: up ? POS : NEG, strong: true },
-          { value: f1(r.o), label: "VideoTaleInteract" },
+          { value: f1(r.o), label: "VIS-Ground" },
           { value: f1(r.b), label: base[0] }], gg));
       });
       tableView(host, ["Metric", "Ours", base[0], "Difference"], d.map((r) => [r.k, f1(r.o), f1(r.b), (r.v >= 0 ? "+" : "") + f1(r.v)]));
@@ -394,7 +403,7 @@
           const xa = x(acc) + (acc ? 1 : 0), xb = x(acc + c) - (acc + c < 72 ? 1 : 0); // 2px surface gap
           const gg = s("g", { "aria-label": `${name}, ${BUCKETS[k]}: ${c} of 72` }, svg);
           s("rect", { x: xa, y: y0, width: Math.max(1, xb - xa), height: h, rx: 3, fill: RAMP[k] }, gg);
-          if (xb - xa > 26) text(gg, (xa + xb) / 2, y0 + h / 2 + 4, c, { "text-anchor": "middle", fill: k === 0 ? INK : "#fff", "font-weight": 600, "font-size": 11.5 });
+          if (xb - xa > 26) text(gg, (xa + xb) / 2, y0 + h / 2 + 4, c, { "text-anchor": "middle", fill: k === 0 ? DARK_TXT : "#fff", "font-weight": 600, "font-size": 11.5 });
           hoverable(gg, (e) => showTip(e, `${name} · score ${BUCKETS[k]}`, [
             { value: `${c} of 72`, label: `outputs (${Math.round((c / 72) * 100)}%)`, color: RAMP[k], strong: true }], gg));
           acc += c;
@@ -428,8 +437,8 @@
         const g = s("g", { "aria-label": `Participant: ${p[0]} to ${p[1]} points` }, svg);
         s("line", { x1: xA + jit, x2: xB + jit, y1: y(p[0]), y2: y(p[1]), stroke: "transparent", "stroke-width": 14 }, g);
         const ln = s("line", { x1: xA + jit, x2: xB + jit, y1: y(p[0]), y2: y(p[1]), stroke: "#c3c7cf", "stroke-width": 1.5 }, g);
-        const c1 = s("circle", { cx: xA + jit, cy: y(p[0]), r: 4, fill: "#b9bec8", stroke: "#fff", "stroke-width": 2 }, g);
-        const c2 = s("circle", { cx: xB + jit, cy: y(p[1]), r: 4, fill: "#b9bec8", stroke: "#fff", "stroke-width": 2 }, g);
+        const c1 = s("circle", { cx: xA + jit, cy: y(p[0]), r: 4, fill: "#b9bec8", stroke: SURF, "stroke-width": 2 }, g);
+        const c2 = s("circle", { cx: xB + jit, cy: y(p[1]), r: 4, fill: "#b9bec8", stroke: SURF, "stroke-width": 2 }, g);
         lines.push([ln, c1, c2]);
         hoverable(g, (e) => {
           lines.forEach(([l, a, b]) => { l.setAttribute("stroke", "#c3c7cf"); a.setAttribute("fill", "#b9bec8"); b.setAttribute("fill", "#b9bec8"); });
@@ -480,7 +489,7 @@
           const xa = x(acc) + (acc ? 1 : 0), xb = x(acc + c) - (acc + c < 4 ? 1 : 0);
           const gg = s("g", { "aria-label": `${name}, rating ${k + 1}: ${c} of 4` }, svg);
           s("rect", { x: xa, y: y0, width: xb - xa, height: h, rx: 3, fill: LCOL[k] }, gg);
-          text(gg, (xa + xb) / 2, y0 + h / 2 + 4, `${k + 1}`, { "text-anchor": "middle", fill: k >= 4 || k === 0 ? "#fff" : INK, "font-weight": 600, "font-size": 11.5 });
+          text(gg, (xa + xb) / 2, y0 + h / 2 + 4, `${k + 1}`, { "text-anchor": "middle", fill: k >= 4 || k === 0 ? "#fff" : DARK_TXT, "font-weight": 600, "font-size": 11.5 });
           hoverable(gg, (e) => showTip(e, `${name} · rating ${k + 1}`, [{ value: `${c} of 4`, label: "respondents", color: LCOL[k], strong: true }], gg));
           acc += c;
         });
