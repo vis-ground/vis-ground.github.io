@@ -108,7 +108,8 @@
   if (tv && hint) {
     const sync = () => (hint.hidden = !tv.muted);
     const unmute = () => { tv.muted = false; tv.play().catch(() => {}); sync(); };
-    hint.addEventListener("click", (e) => { e.stopPropagation(); unmute(); });
+    // clicking the reminder restarts the teaser so the viewer hears it from the start
+    hint.addEventListener("click", (e) => { e.stopPropagation(); tv.currentTime = 0; unmute(); });
     tv.addEventListener("volumechange", sync);
     if (reduce) { tv.removeAttribute("autoplay"); tv.pause(); sync(); }
     else {
