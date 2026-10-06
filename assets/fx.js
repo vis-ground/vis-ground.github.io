@@ -95,10 +95,28 @@
 
   /* ---------- teaser: fit it in the first screen ---------- */
   const teaserBox = $(".teaser");
-  const fitTeaser = () => teaserBox && document.documentElement.style.setProperty("--teaser-top", `${teaserBox.offsetTop}px`);
+  const fitTeaser = () => {
+    if (!teaserBox) return;
+    document.documentElement.style.setProperty("--teaser-top", `${teaserBox.offsetTop}px`);
+    // the sound reminder sits beside the video when there is room, else above it
+    // measure in the side-by-side layout so the choice doesn't flip once the video shrinks
+    requestAnimationFrame(() => {
+      teaserBox.classList.remove("hint-above");
+      const room = innerWidth - teaserBox.getBoundingClientRect().right;
+      teaserBox.classList.toggle("hint-above", room < 128 + 20 + 16);
+    });
+  };
   fitTeaser();
   addEventListener("resize", fitTeaser);
   document.fonts && document.fonts.ready.then(fitTeaser);
+  // also re-check when the hero reflows (e.g. author lines re-wrap, a scrollbar appears)
+  if (teaserBox && "ResizeObserver" in window) {
+    let last = "";
+    new ResizeObserver(() => {
+      const key = `${innerWidth}x${innerHeight}@${teaserBox.offsetTop}`;
+      if (key !== last) { last = key; fitTeaser(); }
+    }).observe(teaserBox.parentElement);
+  }
 
   /* ---------- teaser: autoplay with sound when the browser allows it ---------- */
   // Browsers block unmuted autoplay until the visitor interacts with the page, so try

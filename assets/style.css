@@ -128,7 +128,7 @@ p { margin: 0 0 14px; color: var(--ink-2); }
 .buttons { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
 
 /* the teaser is sized so it fits in the first screen; --teaser-top is set by fx.js */
-.teaser { width: min(1180px, 100%, max(560px, calc((100svh - var(--teaser-top, 400px) - 20px) * 16 / 9))); margin: 0 auto; }
+.teaser { position: relative; width: min(1180px, 100%, max(560px, calc((100svh - var(--teaser-top, 400px) - 20px - var(--hint-space, 0px)) * 16 / 9))); margin: 0 auto; }
 .video-frame { position: relative; border-radius: var(--radius); overflow: hidden; background: #000; }
 .video-frame video { width: 100%; aspect-ratio: 16 / 9; background: #000; }
 .glow-frame { box-shadow: 0 0 0 1px var(--line), 0 40px 100px -40px rgba(26, 115, 232, .35), 0 24px 60px -30px rgba(15, 23, 42, .35); }
@@ -136,10 +136,24 @@ p { margin: 0 0 14px; color: var(--ink-2); }
   background: linear-gradient(120deg, rgba(66, 133, 244, .8), rgba(234, 67, 53, .5), rgba(251, 188, 5, .5), rgba(52, 168, 83, .8));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
 /* reminder shown while the teaser is muted: hops and wiggles every few seconds */
-.sound-hint { position: absolute; right: 16px; top: 16px; z-index: 2; display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px 9px 12px; border-radius: 999px;
-  border: 0; background: #fff; color: #0f1115; font: 700 13.5px/1 "Inter", sans-serif; cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .35); animation: nudge 2.8s ease-in-out infinite; transform-origin: 50% 100%; }
-.sound-hint svg { width: 18px; height: 18px; color: var(--red); }
+/* sits beside the video (fx.js moves it above the video when there is no room) */
+.sound-hint { position: absolute; left: calc(100% + 20px); top: 50%; translate: 0 -50%; z-index: 2; width: 128px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 12px; border-radius: 16px;
+  border: 1px solid var(--line); background: #fff; color: var(--ink); font: 500 13px/1.35 "Inter", sans-serif; text-align: center; cursor: pointer;
+  box-shadow: 0 12px 30px -10px rgba(15, 23, 42, .3); animation: nudge 2.8s ease-in-out infinite; transform-origin: 50% 100%; }
+.sound-hint b { font-weight: 700; color: var(--accent); }
+.sound-hint svg { width: 26px; height: 26px; color: var(--red); }
+.sound-hint::before { content: ""; position: absolute; left: -7px; top: 50%; width: 12px; height: 12px; margin-top: -6px; background: #fff;
+  border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); transform: rotate(45deg); }
+/* not enough room beside the video: the reminder sits above it, pointing down */
+.teaser.hint-above { display: flex; flex-direction: column; }
+.teaser.hint-above:has(#soundHint:not([hidden])) { --hint-space: 52px; }
+.teaser.hint-above .sound-hint { position: relative; left: auto; top: auto; translate: none; order: -1; align-self: center; margin: 0 0 14px;
+  width: auto; flex-direction: row; gap: 8px; padding: 9px 16px 9px 12px; border-radius: 999px; font-size: 13.5px; }
+.teaser.hint-above .sound-hint br { display: none; }
+.teaser.hint-above .sound-hint b::before { content: "\00a0· "; }
+.teaser.hint-above .sound-hint svg { width: 18px; height: 18px; }
+.teaser.hint-above .sound-hint::before { left: 50%; top: auto; bottom: -7px; margin: 0 0 0 -6px; border-left: 0; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
 .sound-hint:hover { animation-play-state: paused; }
 @keyframes nudge {
   0%, 52%, 100% { transform: translateY(0) rotate(0); }
