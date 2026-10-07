@@ -19,6 +19,7 @@ Upload the whole folder to any static host (GitHub Pages, Netlify, a university 
 ```bash
 python3 tools/build_data.py /path/to/ffmpeg   # writes assets/data.js and tools/jobs.json
 python3 tools/encode.py /path/to/ffmpeg       # encodes into assets/videos/ (skips existing; FORCE=1 to redo)
+python3 tools/build_wall.py /path/to/ffmpeg   # hero background: video wall of story shots
 ```
 
 `build_data.py` reads the originals in `../videos` and `../story_examples`. For the real study sessions it cuts out the question cards and blurs the burnt-in answer label, because both show participant IDs. It also maps each question to its answer segment; the map comes from `tools/real_scan.json`. The page then draws its own "Generated answer" label.

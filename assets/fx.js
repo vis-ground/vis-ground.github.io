@@ -93,6 +93,13 @@
   lb.addEventListener("click", closeLb);
   addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
 
+  /* ---------- hero video wall: only play while the hero is on screen ---------- */
+  const wallV = $("#heroWall");
+  if (wallV) {
+    if (reduce) { wallV.removeAttribute("autoplay"); wallV.pause(); }
+    else new IntersectionObserver(([e]) => (e.isIntersecting ? wallV.play().catch(() => {}) : wallV.pause())).observe($(".hero"));
+  }
+
   /* ---------- teaser: fit it in the first screen ---------- */
   const teaserBox = $(".teaser");
   const fitTeaser = () => {
